@@ -1,4 +1,5 @@
 <!doctype html><html lang="en"><head><meta charset=utf8><title>Rudo Menge · Design &amp; Art Direction</title><meta name="description" content="Rudo Menge, graphic designer and art director in Groningen. Posters, identities, books and exhibitions."><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="icon" href="img/icon/favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="img/icon/favicon-32.png"><link rel="icon" type="image/png" sizes="192x192" href="img/icon/icon-192.png"><link rel="apple-touch-icon" href="img/icon/apple-touch-icon.png"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <style>
 /* Bewust één wit thema, ook bij donkere modus op de telefoon. */
 /* Layout: een wand van horizontale banen, afwisselend naar links en rechts, eindeloos (verticaal kan ook via het paneel). Kantelen en vergroten. Geen tekst. */
@@ -45,6 +46,11 @@ body { background: var(--bg); color: var(--ink); font-family: var(--ui); overflo
 .wall.h .set { flex-direction: row; height: 100%; padding-bottom: 0; padding-right: var(--gap); }
 .wall.h .tile { height: var(--lh, 300px); width: calc(var(--lh, 300px) * var(--r, .7)); flex: none; aspect-ratio: auto; }
 .spacer { height: 0; }
+/* getikte tegel: schuift naar voren, staat recht, met een klein bijschrift; de tegel zelf blijft op zijn plek maar is onzichtbaar */
+.tile.picked { visibility: hidden; }
+.pick { position: fixed; left: 0; top: 0; z-index: 40; margin: 0; display: flex; flex-direction: column; overflow: hidden; border-radius: var(--radius); background: var(--bg); box-shadow: 0 30px 60px -18px rgb(0 0 0 / .45); pointer-events: none; }
+.pick img { flex: 1; min-height: 0; width: 100%; object-fit: cover; display: block; }
+.pick figcaption { flex: none; height: 30px; padding: 0 10px; font: 12px/30px var(--ui); color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 .finger {
   position: fixed; left: 0; top: 0; width: 64px; height: 64px; margin: -32px 0 0 -32px; border-radius: 50%;
@@ -153,6 +159,16 @@ body { background: var(--bg); color: var(--ink); font-family: var(--ui); overflo
 }
 .info.dark { --info-bg: #1c1c1c; --info-ink: #f2f2f2; --info-muted: #9a9a9a; }
 .info.black { --info-bg: #000000; --info-ink: #f2f2f2; --info-muted: #8f8f8f; }
+/* water: een zacht golfpatroon dat van onderen tot halverwege de pagina loopt, net iets lichter dan de achtergrond */
+.info-wave { position: fixed; left: 0; right: 0; bottom: 0; height: 62%; z-index: 0; overflow: hidden; pointer-events: none; }
+.info-wave svg { position: absolute; left: 0; bottom: 0; width: 400%; height: 100%; display: block; }
+.info-wave path { fill: color-mix(in srgb, var(--info-ink) 14%, var(--info-bg)); }
+.info-wave .w2 { bottom: -6%; height: 106%; }
+.info-wave .w2 path { fill: color-mix(in srgb, var(--info-ink) 9%, var(--info-bg)); }
+.info-wave .w1 { animation: wave 13s linear infinite; }
+.info-wave .w2 { animation: wave 20s linear infinite reverse; }
+@keyframes wave { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) { .info-wave svg { animation: none !important; } }
 /* portret: groot rechts op de achtergrond, kijkt naar links de pagina in */
 .info-photo {
   position: fixed; top: 0; bottom: 0; right: 0; width: min(100vh, 62vw); z-index: 0; pointer-events: none;
@@ -203,28 +219,31 @@ body { background: var(--bg); color: var(--ink); font-family: var(--ui); overflo
   <div class="fx-part fx-bot" id="fxBot"><img src="img/logo3-nt.png" alt=""></div>
 </div>
 <section class="info" id="info" hidden aria-label="Over Rudo Menge">
+  <div class="info-wave" aria-hidden="true">
+    <svg class="w1" viewBox="0 0 1600 120" preserveAspectRatio="none"><path d="M0 60 C100 0 300 0 400 60 S700 120 800 60 S1100 0 1200 60 S1500 120 1600 60 L1600 120 L0 120 Z"/></svg>
+    <svg class="w2" viewBox="0 0 1600 120" preserveAspectRatio="none"><path d="M0 40 C150 110 250 110 400 40 S650 -10 800 40 S1050 110 1200 40 S1450 -10 1600 40 L1600 120 L0 120 Z"/></svg>
+  </div>
   <div class="info-photo" role="img" aria-label="Portret van Rudo Menge"></div>
   <div class="info-inner">
     <div>
       <h2>About</h2>
       <p>Rudo Menge is a graphic designer and art director based in Groningen, the Netherlands. For more than twenty-five years the studio has made posters, identities, books and exhibitions for museums, theatres, orchestras and luxury brands.</p>
       <p>The work grows out of long collaborations: two decades of exhibition campaigns and the magazine for the Groninger Museum, seasons for Noord Nederlands Toneel and Noord Nederlands Orkest, books with Studio Job, and print for Cartier.</p>
-      <p class="draft">Concepttekst, nog aan te passen.</p>
     </div>
     <div>
       <h2>Selected clients</h2>
       <ul class="clients-names" id="clientNames">
-        <li>Groninger Museum</li><li>Cartier</li><li>Forum Groningen</li><li>Noord Nederlands Toneel</li><li>Noord Nederlands Orkest</li><li>Studio Job</li><li>Kunstpunt</li><li>Catch</li>
+        <li>Studio Job</li><li>Groninger Museum</li><li>Noord Nederlands Orkest</li><li>Forum Groningen</li><li>Noord Nederlands Toneel</li><li>Kunstpunt</li><li>Cartier</li><li>Rijksuniversiteit Groningen</li><li>GasTerra</li><li>Provincie Groningen</li><li>Gemeente Groningen</li>
       </ul>
       <ul class="clients-logos" id="clientLogos" hidden>
-        <li><img src="img/clients/groninger-museum.png" alt="Groninger Museum" onerror="this.replaceWith(this.alt)"></li><li><img src="img/clients/cartier.png" alt="Cartier" onerror="this.replaceWith(this.alt)"></li><li><img src="img/clients/forum-groningen.png" alt="Forum Groningen" onerror="this.replaceWith(this.alt)"></li><li><img src="img/clients/noord-nederlands-toneel.png" alt="Noord Nederlands Toneel" onerror="this.replaceWith(this.alt)"></li><li><img src="img/clients/noord-nederlands-orkest.png" alt="Noord Nederlands Orkest" onerror="this.replaceWith(this.alt)"></li><li><img src="img/clients/studio-job.png" alt="Studio Job" onerror="this.replaceWith(this.alt)"></li><li><img src="img/clients/kunstpunt.png" alt="Kunstpunt" onerror="this.replaceWith(this.alt)"></li><li><img src="img/clients/catch.png" alt="Catch" onerror="this.replaceWith(this.alt)"></li>
+        <li><img src="img/clients/studio-job.png" alt="Studio Job" onerror="this.replaceWith(this.alt)"></li><li><img src="img/clients/groninger-museum.png" alt="Groninger Museum" onerror="this.replaceWith(this.alt)"></li><li><img src="img/clients/noord-nederlands-orkest.png" alt="Noord Nederlands Orkest" onerror="this.replaceWith(this.alt)"></li><li><img src="img/clients/forum-groningen.png" alt="Forum Groningen" onerror="this.replaceWith(this.alt)"></li><li><img src="img/clients/noord-nederlands-toneel.png" alt="Noord Nederlands Toneel" onerror="this.replaceWith(this.alt)"></li><li><img src="img/clients/kunstpunt.png" alt="Kunstpunt" onerror="this.replaceWith(this.alt)"></li><li><img src="img/clients/cartier.png" alt="Cartier" onerror="this.replaceWith(this.alt)"></li><li><img src="img/clients/rijksuniversiteit-groningen.png" alt="Rijksuniversiteit Groningen" onerror="this.replaceWith(this.alt)"></li><li><img src="img/clients/gasterra.png" alt="GasTerra" onerror="this.replaceWith(this.alt)"></li><li><img src="img/clients/provincie-groningen.png" alt="Provincie Groningen" onerror="this.replaceWith(this.alt)"></li><li><img src="img/clients/gemeente-groningen.png" alt="Gemeente Groningen" onerror="this.replaceWith(this.alt)"></li>
       </ul>
     </div>
     <div>
       <h2>Contact</h2>
       <ul class="contact">
         <li><a href="mailto:info@menge.nl">info@menge.nl</a></li>
-        <li><a href="tel:+31623866165">+31 (0)6 23 86 61 65</a></li>
+        <li>+31 (0)6 23 86 61 65</li>
       </ul>
     </div>
   </div>
@@ -370,6 +389,9 @@ body { background: var(--bg); color: var(--ink); font-family: var(--ui); overflo
   </div>
   <label class="check"><input type="checkbox" id="clientLogosOn"> Klanten als logo's (anders als namen)</label>
   <label class="check"><input type="checkbox" id="kbOn" checked> Ken Burns: situatiefoto's zoomen langzaam</label>
+  <label for="kbAmt">Ken Burns zoomsterkte <output id="kbAmtOut"></output></label>
+  <input type="range" id="kbAmt" min="0" max="25" step="1" value="20">
+  <label class="check"><input type="checkbox" id="pickOn"> Tegels klikbaar: tik om naar voren te komen</label>
   <label class="check"><input type="checkbox" id="hoverStop"> Baan stopt bij hover</label>
   <label class="check"><input type="checkbox" id="touchSlow" checked> Banen vertragen onder je vinger</label>
   <label class="check"><input type="checkbox" id="touchLift"> Beelden tillen op onder je vinger (mobiel)</label>
@@ -390,13 +412,15 @@ body { background: var(--bg); color: var(--ink); font-family: var(--ui); overflo
 <script>
 // Slideshow-selectie uit de beeldenkeuze (ja + misschien). Elke keer laden geeft een nieuwe willekeurige volgorde.
 // Bronpaden en keuzes staan in slides.json; de vorige 44 beelden (img/*-s.jpg) blijven als reserve gepubliceerd.
-const SLIDES = [{"id":"gm-newson-detail-letters","r":1.3333,"c":"foto"},{"id":"menge-boeken-site-3d-v2-jk-2","r":1.0,"c":"boek"},{"id":"nno-season-2012","r":0.707,"c":"poster"},{"id":"ag-ploeg-08a","r":1.5015,"c":"foto"},{"id":"gm-2019-roosegaarde-poster","r":0.677,"c":"poster"},{"id":"gm-book-alias-spread-01-1340","r":0.719,"c":"boek"},{"id":"f-hohemesse","r":0.719,"c":"poster"},{"id":"mendini-thumb","r":0.696,"c":"boek"},{"id":"menge-boeken-site-3d-v2-jk-4","r":1.0,"c":"boek"},{"id":"gm-2021-rodin-book-insert-3000x2120","r":0.762,"c":"boek"},{"id":"img-1638","r":1.0,"c":"boek"},{"id":"img-1629","r":1.0,"c":"boek"},{"id":"book-tc","r":0.873,"c":"boek"},{"id":"graffiti-3000x2000-px","r":0.666,"c":"poster"},{"id":"f-01-eo-silver-book","r":0.719,"c":"boek"},{"id":"fat-vrouw-a0-def-2x3","r":0.666,"c":"poster"},{"id":"gm-2021-unzipped-a0","r":0.653,"c":"poster"},{"id":"gm-mag-jr-2","r":0.782,"c":"blad"},{"id":"ag-ploeg-11p","r":1.5015,"c":"foto"},{"id":"mq-omslag-013","r":0.889,"c":"boek"},{"id":"gm-brood-poster","r":0.669,"c":"poster"},{"id":"gm-jr-poster","r":0.668,"c":"poster"},{"id":"abri-nacht","r":0.794,"c":"foto"},{"id":"gm-2022-kleur-3000x2000","r":0.666,"c":"poster"},{"id":"bron-gm-teacoffee-allesandro","r":1.6155,"c":"boek"},{"id":"2022-gianni-versace-poster","r":0.706,"c":"poster"},{"id":"werkman-combi","r":1.6807,"c":"foto"},{"id":"gm-rodin-poster","r":0.719,"c":"poster"},{"id":"gm-mag-wilden-cover","r":0.719,"c":"blad"},{"id":"gm-2021-poster-nnt-fellini-3000x2000","r":0.666,"c":"poster"},{"id":"abri-1","r":0.811,"c":"foto"},{"id":"alaia-poster-v003","r":0.63,"c":"poster"},{"id":"gm-2021-book-erwin-3000x2000","r":0.729,"c":"boek"},{"id":"gm-poste-la-chapelle","r":0.706,"c":"poster"},{"id":"gm-gochina-b","r":0.707,"c":"poster"},{"id":"nnt-posters","r":0.666,"c":"poster"},{"id":"gm-folker-poster","r":0.707,"c":"poster"},{"id":"gm-rodin-thinker-poster","r":0.719,"c":"poster"},{"id":"f-a-poster-nno-2013","r":0.719,"c":"poster"},{"id":"rm-beme8983-hdr-mail","r":2.0,"c":"foto"},{"id":"mng-various-qee-gm","r":1.2315,"c":"object"},{"id":"spreads-optical-01-1340","r":0.632,"c":"boek"},{"id":"gm-bowie-thank-you-adv-def","r":0.666,"c":"poster"},{"id":"gm-mag-bowie2-2","r":0.782,"c":"blad"},{"id":"gm-a3-poster","r":0.631,"c":"poster"},{"id":"gm-2021-boek-iris-3000x2000","r":0.767,"c":"boek"},{"id":"gm-empel-poster-010","r":0.666,"c":"poster"},{"id":"gm-onbekende-rusland","r":0.707,"c":"poster"},{"id":"nnt-magazine-hamlet","r":0.707,"c":"blad"},{"id":"gm-2019-chihuly-poster","r":0.706,"c":"poster"},{"id":"gm-gochina-buitenmuur","r":1.3333,"c":"foto"},{"id":"gm-gochina-c","r":0.707,"c":"poster"},{"id":"menge-boeken-mendini-current-view","r":0.79,"c":"boek"},{"id":"job-840-book","r":0.706,"c":"boek"},{"id":"gm-mariko-mori-poster","r":0.707,"c":"poster"},{"id":"book-iris-bron","r":0.808,"c":"boek"},{"id":"newson-uitn","r":1.2225,"c":"object"},{"id":"gm-de-collectie-maart-2014","r":0.658,"c":"blad"},{"id":"jr-rudo","r":1.7778,"v":1,"c":"video"},{"id":"gm-poster-quinn-moss","r":0.675,"c":"poster"},{"id":"gm-2021-mag-jr","r":0.724,"c":"blad"},{"id":"gm-waterhouse-posters","r":0.707,"c":"poster"},{"id":"gm-2021-poster-newson-3000x2000","r":0.666,"c":"poster"},{"id":"gromm-omslag","r":0.666,"c":"boek"},{"id":"affiche-a0-def-converted","r":0.666,"c":"poster"},{"id":"gm-gochina-a","r":0.707,"c":"poster"},{"id":"book-rus-orient","r":0.627,"c":"boek"},{"id":"gm-2021-poster-laarman-3000x2000","r":0.654,"c":"poster"},{"id":"gm-chalayan-poster","r":0.683,"c":"poster"},{"id":"cycloon-ruw","r":1.5015,"c":"object"},{"id":"gm-abri-wk32","r":1.0,"c":"foto"},{"id":"gm-840-teacoffee","r":0.706,"c":"boek"},{"id":"f-b-poster-nno-2013","r":0.719,"c":"poster"},{"id":"ag-ploeg-11j","r":1.4749,"c":"foto"},{"id":"gm-lamsweerde-2x3","r":0.666,"c":"poster"},{"id":"job-a2-alter-ego-v02","r":0.691,"c":"poster"},{"id":"f-c-poster-nno-2013","r":0.719,"c":"poster"},{"id":"a0-affiche-repin-def02-converted","r":0.666,"c":"poster"},{"id":"menge-boeken-site-mag-current-view","r":0.732,"c":"blad"},{"id":"gm-book-alaia-10","r":1.5267,"c":"boek"},{"id":"mng-book-diaghilev","r":1.2315,"c":"boek"},{"id":"gm-onthemove-wk36","r":1.0,"c":"foto"},{"id":"gm-divers-showreel-v2","r":1.7778,"v":1,"c":"video"},{"id":"gm-divers-showreel","r":1.7778,"v":1,"c":"video"},{"id":"joram-krol-showreel","r":1.7778,"v":1,"c":"video"},{"id":"showreel-slow","r":1.7778,"v":1,"c":"video"},{"id":"tattoo-showreel","r":1.7778,"v":1,"c":"video"},{"id":"trump-serrano-showreel","r":1.7778,"v":1,"c":"video"},{"id":"gm-2021-erwin-olaf-silver-3000x2120","r":0.706,"c":"poster"},{"id":"menge-instagram-01-07","r":0.824,"c":"boek"}];
+const SLIDES = [{"id":"gm-newson-detail-letters","r":1.3333,"c":"foto"},{"id":"menge-boeken-site-3d-v2-jk-2","r":1.0,"c":"boek"},{"id":"nno-season-2012","r":0.707,"c":"poster"},{"id":"ag-ploeg-08a","r":1.5015,"c":"foto"},{"id":"gm-2019-roosegaarde-poster","r":0.677,"c":"poster"},{"id":"gm-book-alias-spread-01-1340","r":0.719,"c":"boek"},{"id":"f-hohemesse","r":0.719,"c":"poster"},{"id":"mendini-thumb","r":0.696,"c":"boek"},{"id":"menge-boeken-site-3d-v2-jk-4","r":1.0,"c":"boek"},{"id":"gm-2021-rodin-book-insert-3000x2120","r":0.762,"c":"boek"},{"id":"img-1638","r":1.0,"c":"boek"},{"id":"img-1629","r":1.0,"c":"boek"},{"id":"book-tc","r":0.873,"c":"boek"},{"id":"graffiti-3000x2000-px","r":0.666,"c":"poster"},{"id":"f-01-eo-silver-book","r":0.719,"c":"boek"},{"id":"fat-vrouw-a0-def-2x3","r":0.666,"c":"poster"},{"id":"gm-2021-unzipped-a0","r":0.653,"c":"poster"},{"id":"gm-mag-jr-2","r":0.782,"c":"blad"},{"id":"ag-ploeg-11p","r":1.5015,"c":"foto"},{"id":"mq-omslag-013","r":0.889,"c":"boek"},{"id":"gm-brood-poster","r":0.669,"c":"poster"},{"id":"gm-jr-poster","r":0.668,"c":"poster"},{"id":"abri-nacht","r":0.794,"c":"foto"},{"id":"gm-2022-kleur-3000x2000","r":0.666,"c":"poster"},{"id":"bron-gm-teacoffee-allesandro","r":1.6155,"c":"boek"},{"id":"2022-gianni-versace-poster","r":0.706,"c":"poster"},{"id":"werkman-combi","r":1.6807,"c":"foto"},{"id":"gm-rodin-poster","r":0.719,"c":"poster"},{"id":"gm-mag-wilden-cover","r":0.719,"c":"blad"},{"id":"gm-2021-poster-nnt-fellini-3000x2000","r":0.666,"c":"poster"},{"id":"abri-1","r":0.811,"c":"foto"},{"id":"alaia-poster-v003","r":0.63,"c":"poster"},{"id":"gm-2021-book-erwin-3000x2000","r":0.729,"c":"boek"},{"id":"gm-poste-la-chapelle","r":0.706,"c":"poster"},{"id":"gm-gochina-b","r":0.707,"c":"poster"},{"id":"nnt-posters","r":0.666,"c":"poster"},{"id":"gm-folker-poster","r":0.707,"c":"poster"},{"id":"gm-rodin-thinker-poster","r":0.719,"c":"poster"},{"id":"f-a-poster-nno-2013","r":0.719,"c":"poster"},{"id":"rm-beme8983-hdr-mail","r":2.0,"c":"foto"},{"id":"mng-various-qee-gm","r":1.2315,"c":"object"},{"id":"spreads-optical-01-1340","r":0.632,"c":"boek"},{"id":"gm-bowie-thank-you-adv-def","r":0.666,"c":"poster"},{"id":"gm-mag-bowie2-2","r":0.782,"c":"blad"},{"id":"gm-a3-poster","r":0.631,"c":"poster"},{"id":"gm-2021-boek-iris-3000x2000","r":0.82,"c":"boek"},{"id":"gm-empel-poster-010","r":0.666,"c":"poster"},{"id":"gm-onbekende-rusland","r":0.707,"c":"poster"},{"id":"nnt-magazine-hamlet","r":0.707,"c":"blad"},{"id":"gm-2019-chihuly-poster","r":0.706,"c":"poster"},{"id":"gm-gochina-buitenmuur","r":1.3333,"c":"foto"},{"id":"gm-gochina-c","r":0.707,"c":"poster"},{"id":"menge-boeken-mendini-current-view","r":0.79,"c":"boek"},{"id":"job-840-book","r":0.706,"c":"boek"},{"id":"gm-mariko-mori-poster","r":0.707,"c":"poster"},{"id":"book-iris-bron","r":0.808,"c":"boek"},{"id":"newson-uitn","r":1.2225,"c":"object"},{"id":"gm-de-collectie-maart-2014","r":0.658,"c":"blad"},{"id":"jr-rudo","r":1.7778,"v":1,"c":"video"},{"id":"gm-poster-quinn-moss","r":0.675,"c":"poster"},{"id":"gm-2021-mag-jr","r":0.724,"c":"blad"},{"id":"gm-waterhouse-posters","r":0.707,"c":"poster"},{"id":"gm-2021-poster-newson-3000x2000","r":0.666,"c":"poster"},{"id":"gromm-omslag","r":0.666,"c":"boek"},{"id":"affiche-a0-def-converted","r":0.666,"c":"poster"},{"id":"gm-gochina-a","r":0.707,"c":"poster"},{"id":"book-rus-orient","r":0.627,"c":"boek"},{"id":"gm-2021-poster-laarman-3000x2000","r":0.654,"c":"poster"},{"id":"gm-chalayan-poster","r":0.683,"c":"poster"},{"id":"cycloon-ruw","r":1.5015,"c":"object"},{"id":"gm-abri-wk32","r":1.0,"c":"foto"},{"id":"gm-840-teacoffee","r":0.706,"c":"boek"},{"id":"f-b-poster-nno-2013","r":0.719,"c":"poster"},{"id":"ag-ploeg-11j","r":1.4749,"c":"foto"},{"id":"gm-lamsweerde-2x3","r":0.666,"c":"poster"},{"id":"job-a2-alter-ego-v02","r":0.691,"c":"poster"},{"id":"f-c-poster-nno-2013","r":0.719,"c":"poster"},{"id":"a0-affiche-repin-def02-converted","r":0.666,"c":"poster"},{"id":"menge-boeken-site-mag-current-view","r":0.732,"c":"blad"},{"id":"gm-book-alaia-10","r":1.5267,"c":"boek"},{"id":"mng-book-diaghilev","r":1.2315,"c":"boek"},{"id":"gm-onthemove-wk36","r":1.0,"c":"foto"},{"id":"gm-divers-showreel-v2","r":1.7778,"v":1,"c":"video"},{"id":"gm-divers-showreel","r":1.7778,"v":1,"c":"video"},{"id":"joram-krol-showreel","r":1.7778,"v":1,"c":"video"},{"id":"showreel-slow","r":1.7778,"v":1,"c":"video"},{"id":"tattoo-showreel","r":1.7778,"v":1,"c":"video"},{"id":"trump-serrano-showreel","r":1.7778,"v":1,"c":"video"},{"id":"gm-2021-erwin-olaf-silver-3000x2120","r":0.706,"c":"poster"},{"id":"menge-instagram-01-07","r":0.824,"c":"boek"}];
 const BASE = SLIDES.map(s => s.v ? 'vid/' + s.id + '.mp4' : 'img/s/' + s.id + '.jpg');
 // breedte / hoogte per beeld
 const RATIO = {};
 SLIDES.forEach((s, i) => RATIO[BASE[i]] = s.r);
 // soort per beeld (poster, boek, blad, foto, object, video), zodat een baan zoveel mogelijk afwisselt
 const KIND = {};
+const KB = { amt: 0.20 };
+function kbApply() { document.querySelectorAll('.tile.kb').forEach(d => { const zin = d.dataset.zin === '1', z = 1 + KB.amt * (+d.dataset.zf); d.style.setProperty('--kb-a', zin ? 1 : z); d.style.setProperty('--kb-b', zin ? z : 1); }); }
 SLIDES.forEach((s, i) => KIND[BASE[i]] = s.c);
 // zet een geschudde rij om: elke soort gelijkmatig over de rij verspreid, en zo min mogelijk dezelfde soort naast elkaar
 function vary(list) {
@@ -464,8 +488,8 @@ function tile(src) {
   const img = new Image(); img.src = src; img.alt = ''; img.decoding = 'async'; img.draggable = false;
   if (KIND[src] === 'foto') {
     // Ken Burns: willekeurig in- of uitzoomen, vanuit een eigen punt, tussen 14 en 26 seconden heen
-    const zin = Math.random() < .5, z = 1.08 + Math.random() * .1;
-    d.classList.add('kb');
+    const zin = Math.random() < .5, zf = .75 + Math.random() * .5, z = 1 + KB.amt * zf;
+    d.classList.add('kb'); d.dataset.zin = zin ? '1' : '0'; d.dataset.zf = zf;
     d.style.setProperty('--kb-a', zin ? 1 : z); d.style.setProperty('--kb-b', zin ? z : 1);
     d.style.setProperty('--kb-d', (14 + Math.random() * 12).toFixed(1) + 's');
     d.style.setProperty('--kb-delay', (-Math.random() * 20).toFixed(1) + 's');
@@ -668,6 +692,80 @@ addEventListener('pointermove', e => {
 const endPinch = e => { if (touches.delete(e.pointerId) && touches.size < 2) pinchOn = null; };
 addEventListener('pointerup', endPinch); addEventListener('pointercancel', endPinch);
 
+// tegel tikken: die komt naar voren, recht, met een bijschrift; nog een tik (of een tik ernaast) en hij vliegt terug
+const CLIENT_TOKEN = { gm: 'Groninger Museum', nno: 'Noord Nederlands Orkest', nnt: 'Noord Nederlands Toneel', job: 'Studio Job', menge: 'Menge', mng: 'Menge', ct: 'Cartier', ruw: 'Rijksuniversiteit Groningen' };
+const CAP_H = 30;
+let pickCard = null, pickTile = null, tap = null;
+// bijschrift uit de bestandsnaam: project, jaar, klant (nog te controleren door Menge)
+function caption(src) {
+  const parts = src.replace(/^(img\/s\/|vid\/)/, '').replace(/\.(jpg|mp4)$/, '').split('-');
+  const client = parts.map(p => CLIENT_TOKEN[p]).find(Boolean) || '';
+  const year = parts.find(p => /^(19|20)\d{2}$/.test(p)) || '';
+  const words = parts.filter(p => p.length > 1 && !CLIENT_TOKEN[p] && !/^(19|20)\d{2}$/.test(p) && !/\d+x\d+|^(px|def|converted|hdr|jk|bron|v?\d+|wk\d+)$/.test(p)).join(' ');
+  return [words.charAt(0).toUpperCase() + words.slice(1), year, client].filter(Boolean).join(' · ');
+}
+const boxOf = (l, t, w, h, tr, op) => ({ left: l + 'px', top: t + 'px', width: w + 'px', height: h + 'px', transform: tr, opacity: op });
+function openPick(t) {
+  const img = t.querySelector('img'), vid = t.querySelector('video');
+  const src = img ? img.getAttribute('src') : vid.getAttribute('poster');
+  const r = t.getBoundingClientRect();
+  if (!r.width) return;
+  const ar = t.offsetWidth / t.offsetHeight, s = state.scale * pinch.zoom;
+  const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+  const h = Math.min(innerHeight * .72, innerWidth * .86 / ar), w = h * ar;
+  const x = (innerWidth - w) / 2, y = (innerHeight - h - CAP_H) / 2;
+  const card = document.createElement('figure'); card.className = 'pick';
+  const pic = new Image(); pic.src = src; pic.alt = '';
+  const cap = document.createElement('figcaption'); cap.textContent = caption(src);
+  card.append(pic, cap);
+  card.style.cssText = `left:${x}px;top:${y}px;width:${w}px;height:${h + CAP_H}px`;
+  document.body.append(card);
+  const tw = t.offsetWidth * s, th = t.offsetHeight * s;
+  card.animate([boxOf(cx - tw / 2, cy - th / 2, tw, th, `rotate(${state.tilt}deg)`, 1), boxOf(x, y, w, h + CAP_H, 'rotate(0deg)', 1)],
+    { duration: 520, easing: 'cubic-bezier(.2,.8,.2,1)' });
+  cap.animate([{ opacity: 0 }, { opacity: 1 }], { delay: 380, duration: 260, fill: 'backwards' });
+  t.classList.add('picked'); pickCard = card; pickTile = t;
+}
+function closePick() {
+  const card = pickCard, t = pickTile;
+  if (!card) return;
+  pickCard = pickTile = null;
+  const cur = card.getBoundingClientRect();
+  card.getAnimations().forEach(a => a.cancel());
+  const r = t && t.isConnected && t.getBoundingClientRect(), s = state.scale * pinch.zoom;
+  const to = r && r.width
+    ? boxOf(r.left + r.width / 2 - t.offsetWidth * s / 2, r.top + r.height / 2 - t.offsetHeight * s / 2, t.offsetWidth * s, t.offsetHeight * s, `rotate(${state.tilt}deg)`, 1)
+    : boxOf(innerWidth / 2, innerHeight / 2, 0, 0, 'rotate(0deg)', 0);
+  const back = card.animate([boxOf(cur.left, cur.top, cur.width, cur.height, 'rotate(0deg)', 1), to], { duration: 420, easing: 'cubic-bezier(.4,0,.2,1)' });
+  card.querySelector('figcaption').animate([{ opacity: 1 }, { opacity: 0 }], { duration: 180, fill: 'forwards' });
+  back.onfinish = () => { card.remove(); if (t) t.classList.remove('picked'); };
+}
+// een duidelijke tik (niet vegen of slepen) opent of sluit een tegel; scrollen blijft gewoon werken
+addEventListener('pointerdown', e => {
+  const r = pickCard && pickCard.getBoundingClientRect();
+  const onPick = !!r && e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom;
+  const blocked = e.target.closest && e.target.closest('.panel, .testbtn, .logo');
+  tap = e.isPrimary && (onPick || !blocked) ? { id: e.pointerId, x: e.clientX, y: e.clientY, t: performance.now() } : null;
+});
+addEventListener('pointermove', e => { if (tap && e.pointerId === tap.id && Math.hypot(e.clientX - tap.x, e.clientY - tap.y) > 8) tap = null; });
+addEventListener('pointercancel', () => tap = null);
+addEventListener('pointerup', e => {
+  const g = tap; tap = null;
+  if (!PICK.on || !g || g.id !== e.pointerId || infoOpen || performance.now() - g.t > 400 || Math.hypot(e.clientX - g.x, e.clientY - g.y) > 8) return;
+  if (pickCard) {
+    const cr = pickCard.getBoundingClientRect();
+    const onCard = e.clientX >= cr.left && e.clientX <= cr.right && e.clientY >= cr.top && e.clientY <= cr.bottom;
+    closePick();
+    if (onCard) { if (e.target.closest && e.target.closest('.logo')) skipClick = true; return; }   // het logo ligt onder de kaart: die tik sluit alleen de kaart
+  }
+  const hit = document.elementFromPoint(e.clientX, e.clientY);
+  const tile = hit && hit.closest ? hit.closest('.tile') : null;
+  if (tile) openPick(tile);
+});
+addEventListener('keydown', e => { if (e.key === 'Escape' && pickCard) closePick(); });
+const PICK = { on: false };   // standaard uit; staat het uit in het paneel, dan is het ook uit op de live-site
+$('pickOn').addEventListener('change', e => { PICK.on = e.target.checked; if (!PICK.on) closePick(); });
+
 let last = performance.now(); var slow = 1;
 function frame(now) {
   const dt = Math.min(0.05, (now - last) / 1000); last = now;
@@ -768,6 +866,7 @@ $('touchSlow').addEventListener('change', e => state.touchSlow = e.target.checke
 $('showFinger').addEventListener('change', e => state.showFinger = e.target.checked);
 $('touchLift').addEventListener('change', e => state.touchLift = e.target.checked);
 $('kbOn').addEventListener('change', e => wall.classList.toggle('kb-off', !e.target.checked));
+bindRange('kbAmt', v => v + '%', v => { KB.amt = v / 100; kbApply(); });
 $('clientLogosOn').addEventListener('change', e => { $('clientLogos').hidden = !e.target.checked; $('clientNames').hidden = e.target.checked; });
 bindRange('wzoom', v => v + '%', v => zoomAbout({ x: (stage.clientWidth || VW) / 2, y: VH / 2 }, v / 100));
 
@@ -1065,8 +1164,15 @@ async function rollGlyph(c, delay) {
       { duration: 380 + Math.random() * 220, easing: 'cubic-bezier(.6, 0, .2, 1)', fill: 'forwards' }).finished;
   } finally { cell.remove(); busyCells.delete(c); }
 }
+// de letterrol start pas als de letterbeelden geladen zijn en er een seconde voorbij is: eerder ziet het logo er niet af
+let rollReady = false;
+const glyphImg = new Image(); glyphImg.src = 'img/logo3-glyphs.png';
+Promise.all([
+  new Promise(res => { if (glyphImg.complete) res(); else { glyphImg.onload = res; glyphImg.onerror = res; } }),
+  new Promise(res => setTimeout(res, 1000))
+]).then(() => { rollReady = true; });
 $('logoBtn').addEventListener('pointermove', e => {
-  if (e.pointerType !== 'mouse' || !letterState.roll || reduce || infoOpen) return;
+  if (e.pointerType !== 'mouse' || !letterState.roll || !rollReady || reduce || infoOpen) return;
   const r = $('logoBtn').getBoundingClientRect();
   const x = (e.clientX - r.left) / r.width * LOGO_W, y = (e.clientY - r.top) / r.height * LOGO_H;
   const c = GLYPHS.find(c => x >= c.x - 4 && x <= c.x + c.w + 4 && y >= c.y - 4 && y <= c.y + c.h + 4) || null;
