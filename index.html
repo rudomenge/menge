@@ -66,25 +66,77 @@ body { background: var(--bg); color: var(--ink); font-family: var(--ui); overflo
 /* cases: vier projecten op volledig scherm, als kubus; swipe naar rechts gaat naar het volgende */
 .cases { position: fixed; inset: 0; z-index: 25; overflow: hidden; background: #000; opacity: 0; touch-action: none; }
 .cases.on { opacity: 1; }
+/* eenmalige swipe-hint op mobiel: dunne pijl rechts van het midden, gloeit even op en verdwijnt */
+.cases-hint { --dx: 28px; position: absolute; right: calc(32px + env(safe-area-inset-right, 0px)); top: 50%; width: 48px; height: 19px; margin: -9.5px 0 0; z-index: 30; pointer-events: none; opacity: 0; }
+.cases-hint.l { --dx: -28px; right: auto; left: calc(32px + env(safe-area-inset-left, 0px)); }
+.cases.hint-finger .cases-hint { display: none; }
+.cases-finger { position: absolute; left: 50%; top: 20%; width: 81px; height: 81px; margin: -40.5px 0 0 -40.5px; z-index: 30; pointer-events: none; opacity: 0; display: none; }
+.cases.hint-finger .cases-finger { display: block; }
+.cases-finger svg { width: 100%; height: 100%; overflow: visible; fill: none; stroke: #fff; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.cases-finger.on { animation: casesFinger 2.6s linear .4s forwards; }
+/* één veeg van rechts naar links, zonder klik: langzaam begin, steeds sneller wegvegen, dan wegvloeien */
+@keyframes casesFinger {
+  0% { opacity: 0; transform: translateX(36px); animation-timing-function: cubic-bezier(.55, 0, 1, .45); }
+  20% { opacity: 1; transform: translateX(32px); animation-timing-function: cubic-bezier(.55, 0, 1, .45); }
+  80% { opacity: 1; transform: translateX(-44px); animation-timing-function: ease-out; }
+  100% { opacity: 0; transform: translateX(-60px); }
+}
+.cases-hint svg { width: 100%; height: 100%; overflow: visible; fill: none; stroke: #fff; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.cases-hint.on { animation: casesHint 2.2s ease forwards; }
+@keyframes casesHint { 0% { opacity: 0; transform: translateX(var(--dx)); filter: drop-shadow(0 0 0 rgb(255 255 255 / 0)); } 30% { opacity: 1; transform: translateX(0); filter: drop-shadow(0 0 7px rgb(255 255 255 / .9)); } 60% { opacity: 1; transform: translateX(0); filter: drop-shadow(0 0 5px rgb(255 255 255 / .6)); } 100% { opacity: 0; transform: translateX(calc(var(--dx) * -.3)); filter: drop-shadow(0 0 0 rgb(255 255 255 / 0)); } }
+@media (prefers-reduced-motion: reduce) { .cases-hint.on { animation: none; opacity: 0; } }
+/* op desktop blijven de pijlen staan en zijn ze klikbaar: vorige en volgende project */
+/* op desktop is het klikgebied een strook langs de linker- en rechterkant; de pijl zit er midden in en reageert op hover van de hele strook */
+.cases-nav { position: fixed; top: 0; bottom: 0; z-index: 36; width: 22vw; margin: 0; padding: 0; border: 0; background: none; color: #fff; display: none; align-items: center; cursor: pointer; opacity: 0; pointer-events: none; transition: opacity .4s ease; }
+.cases-nav svg { width: 48px; height: 19px; overflow: visible; transform-origin: center; transition: transform .25s ease; }
+.cases-nav.r { right: 0; justify-content: flex-end; padding-right: calc(28px + env(safe-area-inset-right, 0px)); }
+.cases-nav.l { left: 0; justify-content: flex-start; padding-left: calc(28px + env(safe-area-inset-left, 0px)); }
+.cases-nav:hover svg { transform: scale(1.25); }
+#cases.on ~ .cases-nav { opacity: 1; pointer-events: auto; }
+@media (min-width: 761px) { .cases-nav { display: grid; } }
 .cube { position: absolute; left: 0; top: 0; transform-style: preserve-3d; transition: transform 1.1s cubic-bezier(.6, 0, .2, 1); }
 .case { position: absolute; left: 0; top: 0; margin: 0; container-type: size; backface-visibility: hidden; transition: opacity .7s ease; display: flex; align-items: center; justify-content: center; }
 .case img, .case video { display: block; width: 100%; height: 100%; object-fit: contain; }
 .case video { object-fit: cover; }
 .case img { position: relative; z-index: 1; width: calc(100% - 2 * var(--cases-m, 5%)); height: 92%; }   /* poster: marge links en rechts, instelbaar in het cases-paneel */
-.case.case-poster img { width: min(calc(100cqw - 2 * var(--cases-m, 5cqw)), calc(var(--cases-h, 80cqh) * var(--pr, .7))); height: auto; aspect-ratio: var(--pr, .7); border-radius: var(--cases-r, 10px); box-shadow: 0 4px 14px -6px rgb(0 0 0 / var(--cases-s, .12)); }   /* poster: vaste hoogte, midden, eigen radius en schaduw */
+.case.case-poster img { object-fit: cover; width: min(calc(100cqw - 2 * var(--cases-m, 5cqw)), calc(var(--cases-h, 80cqh) * var(--pr, .7))); height: auto; aspect-ratio: var(--pr, .7); border-radius: var(--cases-r, 8px); box-shadow: 0 4px 14px -6px rgb(0 0 0 / var(--cases-s, .12)); }   /* poster: vaste hoogte, midden, eigen radius en schaduw */
 .cases.nocap figcaption { display: none; }
 .case.card { border-radius: 9px; overflow: hidden; box-shadow: 0 22px 44px -16px rgb(0 0 0 / .55); }
 /* boeken: langzaam naar het midden toe zoomen zodra het vlak vooraan staat */
 .case-kb img { transform: scale(var(--bz, 1)); }
-.case-kb.kb-run img { animation: caseKb 6s cubic-bezier(.45, 0, .55, 1) forwards; }   /* zacht in, zacht uit */
-@keyframes caseKb { from { transform: scale(var(--bz, 1)); } to { transform: scale(calc(var(--bz, 1) * 1.15)); } }
+.case-kb.kb-run img { animation: caseKb 7s cubic-bezier(.45, 0, .55, 1) forwards; }   /* zacht in, zacht uit */
+@keyframes caseKb { from { transform: scale(var(--bz, 1)); } to { transform: scale(calc(var(--bz, 1) * 1.10)); } }
+/* mobiel, alleen het Erwin Olaf boek: 10% groter en 15 px omhoog */
+@media (max-width: 760px) {
+  .case-kb.mob img { transform: translateY(var(--my, 0px)) scale(calc(var(--bz, 1) * var(--mz, 1))); }
+  .case-kb.mob.kb-run img { animation: caseKbMob 7s cubic-bezier(.45, 0, .55, 1) forwards; }
+  @keyframes caseKbMob { from { transform: translateY(var(--my, 0px)) scale(calc(var(--bz, 1) * var(--mz, 1))); } to { transform: translateY(var(--my, 0px)) scale(calc(var(--bz, 1) * var(--mz, 1) * 1.1)); } }
+}
 .case-wide { background: #1c1c1c; }
 .case-wide picture { display: contents; }
-.case.case-wide img { width: 100%; height: 100%; object-fit: cover; }   /* breed beeld vult het scherm, op elk schermformaat */
+.case.case-wide img { width: 100%; height: 100%; object-fit: cover; }
+.case.case-wide.xl img { object-position: 50% 80%; translate: var(--sx, 0%) 0; }   /* breed beeld vult het scherm, op elk schermformaat */
 .case-bg { position: absolute; inset: -6%; background-size: cover; background-position: center; filter: blur(34px) brightness(.72); }   /* video's vullen het scherm van boven tot onder */
-.case figcaption { position: absolute; left: 50%; transform: translateX(-50%); bottom: max(32px, env(safe-area-inset-bottom, 0px)); margin: 0; width: max-content; max-width: min(520px, calc(100% - 32px)); padding: 0; border-radius: 0; background: none; color: #fff; text-align: center; font: 500 16px/1.3 "Inter", ui-sans-serif, system-ui, sans-serif; letter-spacing: -.03em; text-shadow: 0 1px 4px rgb(0 0 0 / .175); white-space: pre-line; z-index: 2; }
+.case figcaption .t { font-weight: 700; }
+.case figcaption .s { font-weight: 400; }
+.case figcaption { position: absolute; left: 50%; transform: translateX(-50%); bottom: max(32px, env(safe-area-inset-bottom, 0px)); margin: 0; width: max-content; max-width: min(520px, calc(100% - 32px)); padding: 0; border-radius: 0; background: none; color: #fff; text-align: center; font: 600 20px/1.2 "Inter", ui-sans-serif, system-ui, sans-serif; letter-spacing: -.04em; text-shadow: none; white-space: pre-line; z-index: 2; }
+@media (min-width: 761px) {
+  .case.case-wide.case-kb.dsk img { width: auto; height: 109vh; max-width: 125vw; object-fit: contain; transform: none; }
+  .case.case-wide.case-kb.dsk.kb-run img { animation: caseKbDsk 7s cubic-bezier(.45, 0, .55, 1) forwards; }
+  @keyframes caseKbDsk { from { transform: scale(1); } to { transform: scale(1.1); } }
+  .case.case-poster img { transform: scale(1.1); }
+  .case figcaption { font-size: calc(16px * var(--capS, .9)); font-weight: 400; line-height: 1.3; left: max(32px, env(safe-area-inset-left, 0px)); transform: none; text-align: left; bottom: max(32px, env(safe-area-inset-bottom, 0px)); max-width: min(520px, calc(100% - 64px)); }
+}
+@media (max-width: 760px) { .case.case-poster img { translate: 0 var(--cases-dy, -45px); } }   /* mobiel: poster gecentreerd tussen bovenkant scherm en bovenkant bijschrift (3 regels à 26px) */
 .info, .info *, .navbtn { font-family: "Inter", ui-sans-serif, system-ui, sans-serif; }
 .navbtn:focus-visible { outline: 2px solid #fff; outline-offset: 3px; }
+/* hover op desktop: drie keuzes in het testpaneel (standaard: omhoog) */
+@media (hover: hover) and (min-width: 761px) {
+  .navbtn { transition: transform .25s ease, background-color .25s ease, color .25s ease, box-shadow .25s ease; }
+  :root[data-hover="lift"] .navbtn:hover { transform: translateY(-4px); box-shadow: 0 16px 30px -10px rgb(0 0 0 / .6); }
+  :root[data-hover="invert"] .navbtn:hover { background: #fff; color: #000; box-shadow: 0 0 0 2px #000 inset, 0 10px 24px -10px rgb(0 0 0 / .5); }
+  :root[data-hover="grow"] .navbtn:hover { transform: scale(1.08); }
+}
 
 .logo-letters { position: absolute; left: 0; top: 0; width: 100%; height: auto; display: block; pointer-events: none; }
 .finger {
@@ -247,15 +299,21 @@ body { background: var(--bg); color: var(--ink); font-family: var(--ui); overflo
 }
 .closebtn svg { width: 18px; height: 18px; }
 .closebtn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+/* in Cases alleen een dun wit kruisje, zelfde lijnstijl als de swipe-pijl */
+.closebtn.thin { background: none; color: var(--close-ink, #fff); filter: drop-shadow(0 0 2px rgba(0,0,0,.45)); }
+.closebtn.thin:focus, .closebtn.thin:focus-visible { outline: none; }
+.closebtn.thin svg { width: 22px; height: 22px; stroke-width: 1.5; }
 </style>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&family=Inter:wght@400;500;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&family=Inter:wght@400;500;600;700;800&display=swap">
 
 <div class="stage" id="stage"><main class="wall" id="wall" aria-label="Werk van Menge Ontwerpen"></main></div>
 <div class="spacer" id="spacer"></div>
 <div class="after" id="afterBox"><footer class="foot"><span>Rudo Menge</span><span>Design en art direction</span></footer></div>
 <h1 class="logo logo-d" id="logoD"><img src="img/logo-desktop.png" alt="Rudo Menge, Design &amp; Art Direction"></h1>
 <h1 class="logo logo-m hoverzoom shadow ticker-on" id="logoM"><button id="logoBtn" aria-label="Over Rudo Menge: Art Direction &amp; Design. Posters, Identities, Books, Exhibitions" aria-expanded="false" aria-controls="info"><img id="logoImg" src="img/logo3-nt.png" alt=""><span class="ticker" id="ticker"><span class="ticker-track"><img src="img/logo3-ticker.png" alt=""><img src="img/logo3-ticker.png" alt=""><img src="img/logo3-ticker.png" alt=""><img src="img/logo3-ticker.png" alt=""></span></span><span class="letters" id="letters" aria-hidden="true"></span></button></h1>
-<section class="cases" id="cases" hidden aria-label="Cases"><div class="cube" id="cube"></div></section>
+<section class="cases" id="cases" hidden aria-label="Cases"><div class="cube" id="cube"></div><div class="cases-hint" id="casesHint" aria-hidden="true"><svg viewBox="0 0 40 16"><path d="M12 8 H29"/><path d="M27 1 L39 8 L27 15 Z" fill="#fff" stroke="none"/></svg></div><div class="cases-hint l" id="casesHintL" aria-hidden="true"><svg viewBox="0 0 40 16"><path d="M28 8 H11"/><path d="M13 1 L1 8 L13 15 Z" fill="#fff" stroke="none"/></svg></div><div class="cases-finger" id="casesFinger" aria-hidden="true"><svg viewBox="0 0 44 44"><path d="M16 26 V12 a3 3 0 0 1 6 0 V22 M22 20 V16 a3 3 0 0 1 6 0 V24 M28 20 V18 a3 3 0 0 1 6 0 V28 c0 7 -4 11 -10 11 h-3 c-4 0 -6 -2 -9 -6 l-4 -6 a3 3 0 0 1 5 -3 L16 26"/></svg></div></section>
+<button class="cases-nav r" id="casesNext" aria-label="Volgend project"><svg viewBox="0 0 40 16" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8 H29"/><path d="M27 1 L39 8 L27 15 Z" fill="#fff" stroke="none"/></svg></button>
+<button class="cases-nav l" id="casesPrev" aria-label="Vorig project"><svg viewBox="0 0 40 16" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M28 8 H11"/><path d="M13 1 L1 8 L13 15 Z" fill="#fff" stroke="none"/></svg></button>
 <div class="fx" id="fx" hidden>
   <div class="fx-part fx-top" id="fxTop"><img src="img/logo3-nt.png" alt=""></div>
   <div class="fx-part fx-bot" id="fxBot"><img src="img/logo3-nt.png" alt=""></div>
@@ -306,8 +364,20 @@ body { background: var(--bg); color: var(--ink); font-family: var(--ui); overflo
 <section class="panel" id="casesPanel" hidden aria-label="Cases instellingen">
   <h2>Cases</h2>
   <div class="row">
-    <label for="cRadius">Hoekradius posters <output id="cRadiusOut">10px</output></label>
-    <input type="range" id="cRadius" min="0" max="24" step="1" value="10">
+    <label for="cCapS">Bijschriftgrootte (desktop) <output id="cCapSOut">90%</output></label>
+    <input type="range" id="cCapS" min="50" max="120" step="2" value="90">
+  </div>
+  <div class="row">
+    <label for="cHint">Swipe-hint</label>
+    <select id="cHint"><option value="arrow">Pijlen</option><option value="finger" selected>Vingertje</option></select>
+  </div>
+  <div class="row">
+    <label for="cDy">Verticale positie mobiel <output id="cDyOut">-45px</output></label>
+    <input type="range" id="cDy" min="-110" max="20" step="1" value="-45">
+  </div>
+  <div class="row">
+    <label for="cRadius">Hoekradius posters <output id="cRadiusOut">8px</output></label>
+    <input type="range" id="cRadius" min="0" max="24" step="1" value="8">
   </div>
   <div class="row">
     <label for="cH">Postergrootte (hoogte) <output id="cHOut">80%</output></label>
@@ -365,11 +435,6 @@ body { background: var(--bg); color: var(--ink); font-family: var(--ui); overflo
     <label for="logoR">Logo hoeken <output id="logoROut"></output></label>
     <input type="range" id="logoR" min="0" max="60" step="1" value="16">
   </div>
-  <label class="check"><input type="checkbox" id="tickerOn" checked> Onderste regel als lichtkrant</label>
-  <div class="row">
-    <label for="tickDur">Lichtkrant, één rondje <output id="tickDurOut"></output></label>
-    <input type="range" id="tickDur" min="10" max="120" step="1" value="43">
-  </div>
   <div class="row">
     <label>Splitsen</label>
     <div class="seg two" id="splitSeg">
@@ -394,21 +459,9 @@ body { background: var(--bg); color: var(--ink); font-family: var(--ui); overflo
   </div>
   <label class="check"><input type="checkbox" id="shadowOn" checked> Schaduw onder logo</label>
   <div class="row">
-    <label>Infopagina</label>
-    <div class="seg" id="infoBg" style="grid-template-columns: repeat(3, 1fr)">
-      <button data-v="black">zwart</button><button data-v="dark">donkergrijs</button><button data-v="light">lichtgrijs</button>
-    </div>
-  </div>
-  <div class="row">
     <label>Na het splitsen</label>
     <div class="seg two" id="bandsSeg">
       <button data-v="off">banden weg</button><button data-v="keep">banden blijven</button>
-    </div>
-  </div>
-  <div class="row">
-    <label>Logo plek</label>
-    <div class="seg two" id="logoPos">
-      <button data-p="corner">linksboven</button><button data-p="center">midden</button>
     </div>
   </div>
   <div class="row">
@@ -432,12 +485,6 @@ body { background: var(--bg); color: var(--ink); font-family: var(--ui); overflo
     <input type="range" id="scale" min="0.7" max="2" step="0.05" value="0.95">
   </div>
   <div class="row">
-    <label>Aantal banen in beeld</label>
-    <div class="seg" id="cols">
-      <button data-c="auto">auto</button><button data-c="a"></button><button data-c="b"></button><button data-c="c"></button><button data-c="d"></button>
-    </div>
-  </div>
-  <div class="row">
     <label for="radius">Afronding hoeken <output id="radiusOut"></output></label>
     <input type="range" id="radius" min="0" max="48" step="1" value="12">
   </div>
@@ -459,10 +506,15 @@ body { background: var(--bg); color: var(--ink); font-family: var(--ui); overflo
     <label for="reach">Bereik buren <output id="reachOut"></output></label>
     <input type="range" id="reach" min="0.8" max="3" step="0.1" value="1.6">
   </div>
-  <label class="check"><input type="checkbox" id="clientLogosOn"> Klanten als logo's (anders als namen)</label>
   <label class="check"><input type="checkbox" id="kbOn" checked> Ken Burns: situatiefoto's zoomen langzaam</label>
   <label for="kbAmt">Ken Burns zoomsterkte <output id="kbAmtOut"></output></label>
   <input type="range" id="kbAmt" min="0" max="25" step="1" value="20">
+  <div class="row">
+    <label>Hover-effect About en Cases (desktop)</label>
+    <div class="seg" id="hoverSeg" style="grid-template-columns: repeat(3, 1fr)">
+      <button data-v="lift">omhoog</button><button data-v="invert">omkeren</button><button data-v="grow">groter</button>
+    </div>
+  </div>
   <div class="row">
     <label>Beginanimatie: tegels komen binnen</label>
     <div class="seg" id="introSeg" style="grid-template-columns: repeat(4, 1fr)">
@@ -476,11 +528,7 @@ body { background: var(--bg); color: var(--ink); font-family: var(--ui); overflo
       </div>
     </div>
   </div>
-  <label class="check"><input type="checkbox" id="pickOn"> Tegels klikbaar: tik om naar voren te komen</label>
-  <label class="check"><input type="checkbox" id="hoverStop"> Baan stopt bij hover</label>
   <label class="check"><input type="checkbox" id="touchSlow" checked> Banen vertragen onder je vinger</label>
-  <label class="check"><input type="checkbox" id="touchLift"> Beelden tillen op onder je vinger (mobiel)</label>
-  <label class="check"><input type="checkbox" id="showFinger"> Vingerpunt tonen (mobiel)</label>
 
   <div hidden><!-- eigen beelden: voorlopig uit -->
   <h2>Inhoud</h2>
@@ -561,8 +609,8 @@ function reshuffle() { order = vary(shuffle(pool())); cycles.clear(); lanePos.cl
 
 // een tegel blijft antraciet tot het beeld er echt is; ook klonen of een gemiste laadmelding houden het niet tegen
 setInterval(() => { for (const im of document.querySelectorAll('.tile img.pending')) if (im.complete && im.naturalWidth) im.classList.remove('pending'); }, 250);
-// rustig palet: zand, salie, blauwgrijs en roze, om de beginanimatie heen
-const TILE_COLORS = ['#e7d3c1', '#c9d5c1', '#c3cfdc', '#e4c0c4'];
+// Memphis-pastel, wel verzadigd: zes kleuren, voor de beginanimatie
+const TILE_COLORS = ['#ff8fc0', '#ffd84a', '#7cc8f5', '#7fe0b2', '#c4a2ff', '#ffa05c'];
 function tile(src) {
   const d = document.createElement('div');
   d.className = 'tile'; d._l = 0;
@@ -628,7 +676,8 @@ function makeLane(k) {
   const lane = document.createElement('div'); lane.className = 'lane';
   const track = document.createElement('div'); track.className = 'track';
   const set = document.createElement('div'); set.className = 'set';
-  for (let j = 0; j < per; j++) set.append(tile(seq[(start + j) % n]));
+  // zes kleuren, zo verdeeld dat naast elkaar (in de baan en over de banen heen) nooit dezelfde kleur staat
+  for (let j = 0; j < per; j++) { const t = tile(seq[(start + j) % n]); t.style.background = TILE_COLORS[mod(j + 2 * k, TILE_COLORS.length)]; set.append(t); }
   track.append(set); lane.append(track); wall.append(lane);
   const kRef = -Math.floor(c / 2);              // bovenste/linker baan van het eerste scherm
   const first = state.horiz ? 1 : -1;           // die gaat naar links (horizontaal) of omlaag (verticaal)
@@ -856,7 +905,6 @@ addEventListener('pointerup', e => {
 });
 addEventListener('keydown', e => { if (e.key === 'Escape' && pickCard) closePick(); });
 const PICK = { on: false };   // standaard uit; staat het uit in het paneel, dan is het ook uit op de live-site
-$('pickOn').addEventListener('change', e => { PICK.on = e.target.checked; if (!PICK.on) closePick(); });
 
 let last = performance.now(); var slow = 1;
 function frame(now) {
@@ -923,9 +971,8 @@ bindRange('extra', v => v === 0 ? 'geen' : v + (v === 1 ? ' baan' : ' banen'), v
 $('showLogo').addEventListener('change', e => { $('logoM').hidden = !e.target.checked; });
 // startstand logo: linksboven en 32% breed op desktop, midden en 77% breed op een smal scherm
 if (innerWidth <= 700) $('logoW').value = 77;
-const posBtns = [...$('logoPos').children];
-function setLogoPos(p) { $('logoM').classList.toggle('corner', p === 'corner'); posBtns.forEach(b => b.setAttribute('aria-pressed', b.dataset.p === p)); }
-posBtns.forEach(b => b.addEventListener('click', () => setLogoPos(b.dataset.p)));
+// logo plek is vastgezet: midden (de vorige keuze linksboven is niet meer in het paneel)
+function setLogoPos(p) { $('logoM').classList.toggle('corner', p === 'corner'); }
 setLogoPos('center');   // startstand: logo in het midden, ook op desktop
 bindRange('logoW', v => v + '% van scherm', v => root.style.setProperty('--logo-w', v + 'vw'));
 bindRange('logoR', v => v === 0 ? 'recht' : v + ' px', v => root.style.setProperty('--logo-r', v + 'px'));
@@ -940,26 +987,20 @@ bindRange('nb', v => Math.round(v * 100) + '%', v => state.nb = v);
 bindRange('reach', v => v.toFixed(1) + ' tegels', v => state.reach = v);
 bindRange('radius', v => v + ' px', v => root.style.setProperty('--radius', v + 'px'));
 bindRange('gap', v => v + ' px', v => { gapPx = v; root.style.setProperty('--gap', v + 'px'); if (ready) applyGeometry(); });
-const segs = [...$('cols').children];
+// aantal banen is vastgezet op auto
 function labelCols() {
   const c = CHOICES[state.horiz ? 'h' : 'v'];
-  segs.slice(1).forEach((b, i) => { b.dataset.c = c[i]; b.textContent = c[i]; });
   if (state.cols !== 'auto' && !c.includes(+state.cols)) state.cols = 'auto';
-  markCols();
 }
 const osegs = [...$('orient').children];
 const markOrient = () => osegs.forEach(b => b.setAttribute('aria-pressed', (b.dataset.o === 'h') === state.horiz));
 osegs.forEach(b => b.addEventListener('click', () => { state.horiz = b.dataset.o === 'h'; markOrient(); labelCols(); lanePos.clear(); clearLanes(); applyGeometry(); }));
-const markCols = () => segs.forEach(b => b.setAttribute('aria-pressed', b.dataset.c === String(state.cols)));
-segs.forEach(b => b.addEventListener('click', () => { state.cols = b.dataset.c; markCols(); lanePos.clear(); clearLanes(); applyGeometry(); }));
 labelCols(); markOrient();
-$('hoverStop').addEventListener('change', e => state.hoverStop = e.target.checked);
 $('touchSlow').addEventListener('change', e => state.touchSlow = e.target.checked);
-$('showFinger').addEventListener('change', e => state.showFinger = e.target.checked);
-$('touchLift').addEventListener('change', e => state.touchLift = e.target.checked);
 $('kbOn').addEventListener('change', e => wall.classList.toggle('kb-off', !e.target.checked));
 bindRange('kbAmt', v => v + '%', v => { KB.amt = v / 100; kbApply(); });
-$('clientLogosOn').addEventListener('change', e => { $('clientLogos').hidden = !e.target.checked; $('clientNames').hidden = e.target.checked; });
+// klanten staan vast als namen (niet als logo's)
+$('clientLogos').hidden = true; $('clientNames').hidden = false;
 bindRange('wzoom', v => v + '%', v => zoomAbout({ x: (stage.clientWidth || VW) / 2, y: VH / 2 }, v / 100));
 
 function updateCount() {
@@ -1047,7 +1088,33 @@ const topPoly = (L, T, Rr, R, g) => poly([...arc(L + R, T + R, R, 180, 270), ...
   [Rr, g.yR + SEAM], [g.x2, g.yR + SEAM], [g.x2, g.yM + SEAM], [g.x1, g.yM + SEAM], [g.x1, g.yL + SEAM], [L, g.yL + SEAM]]);
 const botPoly = (L, B, Rr, R, g) => poly([[L, g.yL], [g.x1, g.yL], [g.x1, g.yM], [g.x2, g.yM], [g.x2, g.yR], [Rr, g.yR],
   ...arc(Rr - R, B - R, R, 0, 90), ...arc(L + R, B - R, R, 90, 180)]);
+// Cases: het logo gaat verticaal open als een gordijn, links en rechts uit elkaar
+const vLeft = (L, T, Rr, B, R, cut) => poly([...arc(L + R, T + R, R, 180, 270), [cut + SEAM, T], [cut + SEAM, B], ...arc(L + R, B - R, R, 90, 180)]);
+const vRight = (L, T, Rr, B, R, cut) => poly([[cut, T], ...arc(Rr - R, T + R, R, 270, 360), ...arc(Rr - R, B - R, R, 0, 90), [cut, B]]);
 
+// op mobiel en desktop: de swipe-hint herhaalt zich in een rustig tempo tot er één veeg is geregistreerd
+let casesHintTimer = 0, casesSwiped = false;
+function playCasesHint() {
+  const hs = [...document.querySelectorAll('.cases-hint')], fg = document.getElementById('casesFinger');
+  // op mobiel het vingertje (of de pijlen, volgens het paneel); op desktop altijd de pijlen
+  const finger = matchMedia('(max-width: 760px)').matches && $('cHint').value === 'finger';
+  casesEl.classList.toggle('hint-finger', finger);
+  const targets = finger ? [fg] : hs;
+  [...hs, fg].forEach(h => h.classList.remove('on')); void targets[0].offsetWidth;
+  targets.forEach(h => h.classList.add('on'));
+}
+function showCasesHint(delay = 900) {
+  clearTimeout(casesHintTimer);
+  // op desktop geen bewegende hint: daar zijn de pijltjes zelf al klikbaar
+  if (casesSwiped || reduce || matchMedia('(min-width: 761px)').matches) return;
+  casesHintTimer = setTimeout(() => {
+    if (casesSwiped || casesEl.hidden) return;
+    playCasesHint();
+    showCasesHint(4800);
+  }, delay);
+}
+// een andere keuze in het paneel speelt de hint meteen opnieuw af, zodat je hem direct kunt zien
+$('cHint').addEventListener('change', () => { if (!casesSwiped) showCasesHint(0); });
 async function openInfo(which) {
   if (skipClick) { skipClick = false; return; }   // net gesleept, dan geen infopagina
   if (busy || infoOpen) return;
@@ -1066,8 +1133,11 @@ async function openInfo(which) {
   $('logoBtn').setAttribute('aria-expanded', 'true');
   // 1. uitrekken: het blok groeit naar alle kanten tot het scherm vol en zwart is
   const o1 = { duration: dur(560), easing: EASE, fill: 'forwards' };
-  const a = fxTop.animate([{ clipPath: topPoly(r.left, r.top, r.right, R, g) }, { clipPath: topPoly(0, 0, W, 0, g) }], o1);
-  const b = fxBot.animate([{ clipPath: botPoly(r.left, r.bottom, r.right, R, g) }, { clipPath: botPoly(0, H, W, 0, g) }], o1);
+  const isCases = panel === casesEl, mid = r.left + r.width / 2;
+  const a = isCases ? fxTop.animate([{ clipPath: vLeft(r.left, r.top, r.right, r.bottom, R, mid) }, { clipPath: vLeft(0, 0, W, H, 0, W / 2) }], o1)
+    : fxTop.animate([{ clipPath: topPoly(r.left, r.top, r.right, R, g) }, { clipPath: topPoly(0, 0, W, 0, g) }], o1);
+  const b = isCases ? fxBot.animate([{ clipPath: vRight(r.left, r.top, r.right, r.bottom, R, mid) }, { clipPath: vRight(0, 0, W, H, 0, W / 2) }], o1)
+    : fxBot.animate([{ clipPath: botPoly(r.left, r.bottom, r.right, R, g) }, { clipPath: botPoly(0, H, W, 0, g) }], o1);
   await Promise.all([a.finished, b.finished]);
   await wait(160);
   // 2. splitsen: bovenste deel omhoog, onderste deel omlaag, de infopagina komt eronder tevoorschijn
@@ -1077,36 +1147,57 @@ async function openInfo(which) {
     info.style.setProperty('--info-pt', (infoState.keep ? sMax - r.top + 40 : 88) + 'px');
     info.style.setProperty('--info-pb', (infoState.keep ? r.bottom - sMin + 40 : 64) + 'px');
     info.querySelector('.info-scroll').scrollTop = 0;
-  } else { caseN = 0; resetCases(0); if (new URLSearchParams(location.search).has('test')) casesTweak.hidden = false; }   // cases beginnen altijd bij het eerste project
+  } else { caseN = 0; resetCases(0); if (new URLSearchParams(location.search).has('test')) casesTweak.hidden = false; closeBtn.classList.add('thin'); showCasesHint(); }   // cases beginnen altijd bij het eerste project
   panel.hidden = false;
   panel.classList.add('on');   // direct de infokleur zodra het splitsen begint, geen foto's meer zichtbaar
-  // helemaal uit beeld schuiven, inclusief de overlap op de snijlijn en wat marge, zodat er niets van de naam blijft hangen
-  const up = infoState.keep ? -r.top : -(sMax + SEAM + 8), down = infoState.keep ? H - r.bottom : H - sMin + 8;
+  // stap 2: het zwarte logo gaat naar boven en naar beneden, maar de randen zijn rond, als een ellips die het hele scherm vult
+  // (Cases: het gordijn gaat links en rechts open)
+  const yb = sMax + SEAM, yt = sMin - SEAM;
+  // de rand is een cirkelboog: t = 0 bijna plat (de balk), t = 1 een cirkel die groter is dan het scherm
+  const R0 = 40 * W, R1 = Math.hypot(W / 2, H) * 1.1;
+  const dome = (t, top, hF) => {
+    const N = 40, R = t ? R1 : R0, pts = [];
+    for (let i = 0; i <= N; i++) { const x = W * i / N, s = Math.sqrt(Math.max(0, R * R - (x - W / 2) ** 2)); pts.push([x, top ? yb + t * hF - R + s : yt - t * hF + R - s]); }
+    return top ? poly([[0, 0], [W, 0], ...pts.slice().reverse()]) : poly([[W, H], [0, H], ...pts]);
+  };
   const o2 = { duration: dur(820), easing: EASE, fill: 'forwards' };
-  const c = fxTop.animate([{ transform: 'translateY(0px)' }, { transform: `translateY(${up}px)` }], o2);
-  const d = fxBot.animate([{ transform: 'translateY(0px)' }, { transform: `translateY(${down}px)` }], o2);
-  anims = [a, b, c, d];
+  let c, d, cc = null, dd = null;
+  if (isCases) {
+    c = fxTop.animate([{ transform: 'translateX(0px)' }, { transform: `translateX(${-(W / 2 + 8)}px)` }], o2);
+    d = fxBot.animate([{ transform: 'translateX(0px)' }, { transform: `translateX(${W / 2 + 8}px)` }], o2);
+  } else if (infoState.keep) {
+    c = fxTop.animate([{ transform: 'translateY(0px)' }, { transform: `translateY(${-r.top}px)` }], o2);
+    d = fxBot.animate([{ transform: 'translateY(0px)' }, { transform: `translateY(${H - r.bottom}px)` }], o2);
+  } else {
+    // de twee helften gaan recht omhoog en omlaag, de infopagina komt eronder tevoorschijn
+    const up = -(sMax + SEAM + 8), down = H - sMin + 8;
+    c = fxTop.animate([{ transform: 'translateY(0px)' }, { transform: `translateY(${up}px)` }], o2);
+    d = fxBot.animate([{ transform: 'translateY(0px)' }, { transform: `translateY(${down}px)` }], o2);
+  }
+  anims = [a, b, c, d, cc, dd];
   await Promise.all([c.finished, d.finished]);
+  closeBtn.classList.add('thin');   // dezelfde dunne X voor About en Cases
   root.style.setProperty('--close-bg', infoState.keep || infoState.bg !== 'light' ? '#f2f2f2' : '#141414');
-  root.style.setProperty('--close-ink', infoState.keep || infoState.bg !== 'light' ? '#141414' : '#ffffff');
+  // de X is altijd wit in Cases (zoals de pijltjes); bij About volgt de kleur de infopagina
+root.style.setProperty('--close-ink', panel === info && (infoState.keep || infoState.bg !== 'light') ? '#141414' : '#ffffff');
   closeBtn.hidden = false; closeBtn.focus({ preventScroll: true });
   if (panel === casesEl) playCase();
   busy = false;
 }
 async function closeInfo() {
   if (busy || !infoOpen) return;
-  busy = true; closeBtn.hidden = true;
-  const [a, b, c, d] = anims, panel = openPanel;
+  busy = true; closeBtn.hidden = true; closeBtn.classList.remove('thin');
+  const [a, b, c, d, cc, dd] = anims, panel = openPanel;
   // de panelen klappen dicht; het portret trekt zich even later subtiel terug naar rechts
   const photoOut = panel === info ? info.querySelector('.info-photo').animate([{ transform: 'translateX(0)' }, { transform: 'translateX(12vw)' }], { duration: 1600, delay: 400, easing: 'cubic-bezier(.4, 0, .2, 1)', fill: 'forwards' }) : null;
-  [a, b, c, d].forEach(x => x.playbackRate = 0.7);   // het dichtklappen wat trager
-  c.reverse(); d.reverse();
+  [a, b, c, d, cc, dd].forEach(x => { if (x) x.playbackRate = 0.7; });   // het dichtklappen wat trager
+  c.reverse(); d.reverse(); if (cc) cc.reverse(); if (dd) dd.reverse();
   await Promise.all([c.finished, d.finished]);
   panel.classList.remove('on'); panel.hidden = true; if (photoOut) photoOut.cancel();
   casesTweak.hidden = true; casesPanel.hidden = true;
   a.reverse(); b.reverse();
   await Promise.all([a.finished, b.finished]);
-  anims.forEach(x => x.cancel()); anims = [];
+  anims.forEach(x => x && x.cancel()); anims = [];
   fx.hidden = true; logoEl.style.visibility = '';
   // lichtkrant weer laten verschijnen; de loop opnieuw starten, want sommige browsers pauzeren hem na verborgen zijn
   $('ticker').getAnimations().forEach(x => x.cancel());
@@ -1176,12 +1267,11 @@ function setTicker(on) {
   logoEl.classList.toggle('ticker-on', on);
   $('logoImg').src = on ? 'img/logo3-nt.png' : 'img/logo3.png';
 }
-$('tickerOn').addEventListener('change', e => setTicker(e.target.checked));
-bindRange('tickDur', v => v + ' s', v => root.style.setProperty('--tick', v + 's'));
+// lichtkrant staat vast aan, één rondje in 43 seconden
+root.style.setProperty('--tick', '43s');
 $('hoverOn').addEventListener('change', e => logoEl.classList.toggle('hoverzoom', e.target.checked));
 $('shadowOn').addEventListener('change', e => logoEl.classList.toggle('shadow', e.target.checked));
 bindRange('logoZoom', v => '+' + Math.round((v - 1) * 100) + '%', v => root.style.setProperty('--logo-zoom', v));
-bindSeg('infoBg', () => infoState.bg, v => infoState.bg = v);
 bindSeg('splitSeg', () => infoState.split, v => infoState.split = v);
 
 // letters bij hover: losse letters klappen om of glitchen even naar een andere letter uit het logo, en dan weer terug
@@ -1293,6 +1383,10 @@ function autoRoll() {
       const a = pick(TARGETS), b = pick(TARGETS.filter(c => c !== a));
       rollGlyph(a, 0);
       setTimeout(() => rollGlyph(b, 0), 100);
+      if (Math.random() < .25) {
+        const c = pick(TARGETS.filter(x => x !== a && x !== b));
+        setTimeout(() => rollGlyph(c, 0), 200);
+      }
     }
     autoRoll();
   }, 4500 + Math.random() * 2500);
@@ -1370,11 +1464,17 @@ function runIntro(replay = false) {
     veil.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 1, delay: lastStart, fill: 'backwards' });
     setTimeout(() => veil.remove(), lastStart + 950);
   }
+  // de knoppen About (links) en Cases (rechts) schuiven kort na het logo ook in beeld
+  const navIn = { duration: 800, delay: lastStart + 900, easing: 'cubic-bezier(.2, .8, .2, 1)', fill: 'backwards' };
+  $('aboutBtn').animate([{ transform: 'translateX(calc(-100vw - 100%))' }, { transform: 'translateX(0)' }], navIn);
+  $('casesBtn').animate([{ transform: 'translateX(calc(100vw + 100%))' }, { transform: 'translateX(0)' }], navIn);
   if (!replay) {
     bg.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 500, delay: end - 150, fill: 'forwards' }).onfinish = () => bg.remove();
     setTimeout(() => hidden.forEach(t => t.style.visibility = ''), end + 50);
   }
 }
+bindSeg('hoverSeg', () => root.dataset.hover, v => root.dataset.hover = v);
+root.dataset.hover = 'grow';
 bindSeg('introSeg', () => introState.mode, v => introState.mode = v);
 bindSeg('logoIntroSeg', () => introState.logo, v => introState.logo = v);
 $('introReplay').addEventListener('click', () => runIntro(true));
@@ -1385,28 +1485,45 @@ $('aboutBtn').addEventListener('click', () => openInfo());   // zelfde openklap-
 $('casesBtn').addEventListener('click', () => openInfo('cases'));
 // cases: vier projecten, elk op volledig scherm; de kubus draait per project een kwart slag
 const CASES = [
-  { id: 'gm-2021-book-erwin-3000x2000', wide: 'img/case/erwin-olaf-silver-wide.jpg', tall: 'img/case/erwin-olaf-silver-tall.jpg', zoom: 1.38, book: 1, cap: 'Erwin Olaf · Silver · 2011\nBook design' },   // achtergrond van de foto links en rechts doorgetrokken
-  { id: 'jr-rudo', v: 1, cap: 'JR · Chronicles · 2021\nExhibition campaign' },
-  { id: 'gm-2019-chihuly-poster', cap: 'Chihuly · 2018\nExhibition campaign' },
-  { id: 'tattoo-showreel', v: 1, cap: 'Tattoo · 2025\nDigital' },
-  { id: 'studio-job-book-of-job', wide: 'img/case/studio-job-book-of-job.jpg', cap: 'The Book of Job · 2010\nBook design', zoom: 1.265, book: 1 },   // studiofoto uit 2011, 10% ingezoomd
-  { id: 'gm-rodin-poster', cap: 'Rodin · 2016\nExhibition campaign' }
+  { id: 'tattoo-promo-2025', v: 1, cap: 'Tattoo · 2025\nForum Groningen\nExhibition design' },   // promofilm tentoonstelling (FHD-versie, 20 s)
+  { id: 'gm-2019-chihuly-poster', bgc: 'linear-gradient(#e0b85a, #e8873c)', cap: 'Chihuly · 2018\nGroninger Museum\nExhibition campaign' },
+  { id: 'gm-2021-book-erwin-3000x2000', wide: 'img/case/erwin-olaf-silver-wide.jpg', wideXl: 'img/case/erwin-olaf-silver-xl.jpg', tall: 'img/case/erwin-olaf-silver-tall.jpg', zoom: 1.38, book: 1, mob: { z: 1.1, y: -15 }, dsk: 1, cap: 'Erwin Olaf · Silver · 2011\nGroninger Museum\nBook design' },   // achtergrond van de foto links en rechts doorgetrokken
+  { id: 'gm-2022-kleur-3000x2000', bgc: 'linear-gradient(#d9a9a0, #5e1530)', cap: 'Kleur! · 2022\nGroninger Museum\nExhibition campaign' },
+  { id: 'studio-job-book-of-job', wide: 'img/case/studio-job-book-of-job.jpg', wideXl: 'img/case/studio-job-book-of-job-xl.jpg', cap: 'The Book of Job · 2010\nStudio Job / Rizzoli\nBook design', zoom: 1.265, sx: '-1.25%', book: 1, mob: { z: 0.9, y: -55 } },   // studiofoto uit 2011, 10% ingezoomd
+  { id: 'alaia-poster-v003', img: 'img/case/alaia-poster.jpg', bgc: 'linear-gradient(#e8a25a, #a8452e)', cap: 'Alaïa · 2011\nGroninger Museum\nExhibition campaign' },
+  { id: 'ploeg-expo', wide: 'img/case/ploeg-expo.jpg', book: 1, cap: 'De Ploeg · 2018\nGroninger Museum\nExhibition graphic' },   // Ploegjaar 2018, foto's jan 2019
+  { id: 'gm-rodin-poster', bgc: 'linear-gradient(#abdaf5, #cec37c)', cap: 'Rodin · 2016\nGroninger Museum\nExhibition campaign' },
+  { id: 'serrano-showreel-hd', v: 1, cap: 'Andres Serrano · America & Trump · 2024\nForum Groningen\nDigital' },   // tentoonstellingsfilm Serrano, 1280 px
+  { id: 'nno-season-2012', bgc: 'linear-gradient(#f2a65a, #d81e6b)', cap: 'NNO · Seizoen 2012/13\nNoord Nederlands Orkest\nSeason campaign' }
 ];
 let casesSat = 1.2;   // verzadiging van de achtergrondkleur van posters
 const CASE_STEP = 360 / CASES.length;   // hoek per vlak van de kubus
 let caseA = 0;                          // afstand van het midden van de kubus tot elk vlak
 let caseN = 0, caseMove = false, swipe = null;
+// bijschrift: regel 1 (titel en jaar) vet, de regels eronder lichter
+function capEl(text) {
+  const el = document.createElement('figcaption'), [a, ...b] = text.split('\n');
+  const t = document.createElement('span'); t.className = 't'; t.textContent = a; el.append(t);
+  if (b.length) { const s = document.createElement('span'); s.className = 's'; s.textContent = b.join('\n'); el.append('\n', s); }
+  return el;
+}
 const caseEls = CASES.map(c => {
-  const f = document.createElement('figure'), src = c.v ? 'vid/' + c.id + '.mp4' : c.wide || 'img/s/' + c.id + '.jpg';
+  // desktop: de xl-versie van het boek (boek op 70%, achtergrond tot aan de randen); mobiel blijft het oude beeld
+  const xl = c.wideXl && matchMedia('(min-width: 761px)').matches;
+  const f = document.createElement('figure'), src = c.v ? 'vid/' + c.id + '.mp4' : xl ? c.wideXl : c.wide || c.img || 'img/s/' + c.id + '.jpg';   // img: volledige poster met eigen marge
   let m;
   if (c.v) m = Object.assign(document.createElement('video'), { muted: true, loop: true, playsInline: true, preload: 'auto', poster: 'vid/' + c.id + '.jpg', src });
-  else { m = new Image(); m.alt = ''; if (!c.bg && !c.wide) m.addEventListener('load', () => tint(f, m)); m.src = src; }
-  const cap = document.createElement('figcaption'); cap.textContent = c.cap || caption(c.wide ? 'img/s/' + c.id + '.jpg' : src);
+  else { m = new Image(); m.alt = ''; if (!c.bg && !c.wide) m.addEventListener('load', () => tint(f, m)); if (xl) m.onerror = () => { m.src = c.wide; }; m.src = src; }
+  const cap = capEl(c.cap || caption(c.wide ? 'img/s/' + c.id + '.jpg' : src));
   f.className = c.wide ? 'case case-wide' : (c.v || c.bg) ? 'case' : 'case case-poster';
   m.style.setProperty('--bz', c.zoom || 1);
   if (c.book) f.classList.add('case-kb');
+  if (c.dsk) f.classList.add('dsk');
+  if (xl) { f.classList.add('xl'); m.style.setProperty('--bz', (c.zoom || 1) * 1.05); m.style.setProperty('--sx', c.sx || '0%'); }   // desktop xl: iets groter, boek midden in beeld
+  if (c.mob) { f.classList.add('mob'); m.style.setProperty('--mz', c.mob.z); m.style.setProperty('--my', c.mob.y + 'px'); }   // mobiel: eigen schaal en verticale positie
+  if (c.bgc) { f.style.background = c.bgc; f._fixed = true; }   // vaste achtergrondkleur, niet uit het beeld
   f._m = m;
-  if (f.classList.contains('case-poster')) { const sl = SLIDES.find(x => x.id === c.id); m.style.setProperty('--pr', sl ? sl.r : .7); }
+  if (f.classList.contains('case-poster')) m.style.setProperty('--pr', .667);   // alle posters dezelfde maat en plek: 2:3
   // boek: het beeld wazig op de achtergrond, zodat het scherm vol is zonder het beeld te rekken
   if (c.bg) { const bgd = document.createElement('div'); bgd.className = 'case-bg'; bgd.style.backgroundImage = `url("${src}")`; f.append(bgd); }
   // staand scherm (mobiel): een hoge versie met ruime marge rondom het boek
@@ -1438,6 +1555,7 @@ function deckAt(n, dir) {
 function resetCases(n) { deckAt(n, 1); }
 // achtergrond van een poster: het gemiddelde van de poster, een tikje verzadigder
 function tint(f, img) {
+  if (f._fixed) return;
   try {
     const c = document.createElement('canvas'); c.width = c.height = 24;
     const x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(img, 0, 0, 24, 24);
@@ -1452,6 +1570,8 @@ function tint(f, img) {
 const casesTweak = $('casesTweak'), casesPanel = $('casesPanel');
 casesTweak.addEventListener('click', () => { const open = casesPanel.hidden; casesPanel.hidden = !open; casesTweak.setAttribute('aria-expanded', String(open)); });
 $('cRadius').addEventListener('input', e => { root.style.setProperty('--cases-r', e.target.value + 'px'); $('cRadiusOut').textContent = e.target.value + 'px'; });
+$('cCapS').addEventListener('input', e => { root.style.setProperty('--capS', e.target.value / 100); $('cCapSOut').textContent = e.target.value + '%'; });
+$('cDy').addEventListener('input', e => { root.style.setProperty('--cases-dy', e.target.value + 'px'); $('cDyOut').textContent = e.target.value + 'px'; });
 $('cShadow').addEventListener('input', e => { root.style.setProperty('--cases-s', e.target.value); $('cShadowOut').textContent = (+e.target.value).toFixed(2); });
 $('cH').addEventListener('input', e => { root.style.setProperty('--cases-h', e.target.value + 'cqh'); $('cHOut').textContent = e.target.value + '%'; });
 $('cMargin').addEventListener('input', e => { root.style.setProperty('--cases-m', e.target.value + 'cqw'); $('cMarginOut').textContent = e.target.value + '%'; });
@@ -1528,7 +1648,7 @@ casesEl.addEventListener('pointerup', () => {
   if (!s || !s.drag) return;
   const x = s.axis === 'x', d = x ? s.dx : s.dy, thr = x ? innerWidth * .15 : innerHeight * .15;
   const dir = d < 0 ? 1 : -1;
-  if (Math.abs(d) > thr && !caseMove) throwCard(dir, s.axis, x ? s.dy * .3 : s.dx * .3);
+  if (Math.abs(d) > thr && !caseMove) { casesSwiped = true; clearTimeout(casesHintTimer); throwCard(dir, s.axis, x ? s.dy * .3 : s.dx * .3); }
   else snapBack(dir, s.axis);
 });
 casesEl.addEventListener('pointercancel', () => { if (swipe && swipe.drag) snapBack(swipe.dir || 1, swipe.axis); swipe = null; });
@@ -1542,10 +1662,13 @@ document.addEventListener('keydown', e => {
   if (e.key === 'ArrowRight') stepCase(1);
   if (e.key === 'ArrowLeft') stepCase(-1);
 });
+// de zichtbare pijlen op desktop: rechts = volgend project, links = vorig project, net als de pijltjestoetsen
+$('casesNext').addEventListener('click', () => stepCase(1));
+$('casesPrev').addEventListener('click', () => stepCase(-1));
 addEventListener('resize', layoutCube);
 layoutCube();
 </script>
-<div class="ver" id="ver" aria-hidden="true">1.1</div>
+<div class="ver" id="ver" aria-hidden="true">1.2</div>
 <style>
 .ver { position: fixed; z-index: 45; left: calc(10px + env(safe-area-inset-left, 0px)); top: calc(8px + env(safe-area-inset-top, 0px));
   font: 400 10px/1 "Inter", ui-sans-serif, system-ui, sans-serif; letter-spacing: .04em; font-variant-numeric: tabular-nums;
@@ -1553,7 +1676,7 @@ layoutCube();
 </style>
 <script>
 (() => {
-  const el = document.getElementById('ver'), V = '1.1';
+  const el = document.getElementById('ver'), V = '1.2';
   let seen = false; try { seen = localStorage.getItem('mv') === '1'; } catch (e) {}
   fetch('/api/count', { method: seen ? 'GET' : 'POST' }).then(r => r.json()).then(d => {
     if (typeof d.n !== 'number') return;
