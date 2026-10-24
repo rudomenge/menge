@@ -1278,5 +1278,21 @@ $('introReplay').addEventListener('click', () => runIntro(true));
 const introTry = () => { if (ready && tiles.length) runIntro(); else setTimeout(introTry, 80); };
 setTimeout(introTry, 200);
 </script>
-
+<div class="ver" id="ver" aria-hidden="true">1.0</div>
+<style>
+.ver { position: fixed; z-index: 45; left: calc(10px + env(safe-area-inset-left, 0px)); top: calc(8px + env(safe-area-inset-top, 0px));
+  font: 400 10px/1 "Inter", ui-sans-serif, system-ui, sans-serif; letter-spacing: .04em; font-variant-numeric: tabular-nums;
+  color: #fff; mix-blend-mode: difference; opacity: .7; pointer-events: none; user-select: none; }
+</style>
+<script>
+(() => {
+  const el = document.getElementById('ver'), V = '1.0';
+  let seen = false; try { seen = localStorage.getItem('mv') === '1'; } catch (e) {}
+  fetch('/api/count', { method: seen ? 'GET' : 'POST' }).then(r => r.json()).then(d => {
+    if (typeof d.n !== 'number') return;
+    el.textContent = V + ' \u2013 ' + d.n;
+    if (!seen) try { localStorage.setItem('mv', '1'); } catch (e) {}
+  }).catch(() => {});
+})();
+</script>
 </body></html>
