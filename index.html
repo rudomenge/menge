@@ -151,12 +151,14 @@ body { background: var(--bg); color: var(--ink); font-family: var(--ui); overflo
 .fx-part img { position: absolute; display: block; height: auto; }
 .info {
   --info-bg: #e4e4e4; --info-ink: #141414; --info-muted: #5c5c5c;
-  position: fixed; inset: 0; z-index: 25; overflow-y: auto; overscroll-behavior: contain;
+  position: fixed; inset: 0; z-index: 25; overflow: hidden;
   background: var(--info-bg); color: var(--info-ink); opacity: 0;
   font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
-  padding-left: max(24px, env(safe-area-inset-left, 0px)); padding-right: max(24px, env(safe-area-inset-right, 0px));
-  padding-block: var(--info-pt, 88px) var(--info-pb, 64px);
 }
+/* alleen de tekst scrolt; foto en golf blijven stil op hun plek, ook bij overscroll op de telefoon */
+.info-scroll { position: absolute; inset: 0; z-index: 1; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
+  padding-left: max(24px, env(safe-area-inset-left, 0px)); padding-right: max(24px, env(safe-area-inset-right, 0px));
+  padding-block: var(--info-pt, 88px) var(--info-pb, 64px); }
 .info.dark { --info-bg: #1c1c1c; --info-ink: #f2f2f2; --info-muted: #9a9a9a; }
 .info.black { --info-bg: #000000; --info-ink: #f2f2f2; --info-muted: #8f8f8f; }
 /* water: een zacht golfpatroon dat van onderen tot halverwege de pagina loopt, net iets lichter dan de achtergrond */
@@ -224,6 +226,7 @@ body { background: var(--bg); color: var(--ink); font-family: var(--ui); overflo
     <svg class="w2" viewBox="0 0 1600 120" preserveAspectRatio="none"><path d="M0 40 C150 110 250 110 400 40 S650 -10 800 40 S1050 110 1200 40 S1450 -10 1600 40 L1600 120 L0 120 Z"/></svg>
   </div>
   <div class="info-photo" role="img" aria-label="Portret van Rudo Menge"></div>
+  <div class="info-scroll">
   <div class="info-inner">
     <div>
       <h2>About</h2>
@@ -246,6 +249,7 @@ body { background: var(--bg); color: var(--ink); font-family: var(--ui); overflo
         <li>+31 (0)6 23 86 61 65</li>
       </ul>
     </div>
+  </div>
   </div>
 </section>
 <button class="closebtn" id="closeInfo" hidden aria-label="Info sluiten"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19"/></svg></button>
@@ -980,7 +984,7 @@ async function openInfo() {
   const sMax = Math.max(g.yL, g.yM, g.yR), sMin = Math.min(g.yL, g.yM, g.yR);
   info.style.setProperty('--info-pt', (infoState.keep ? sMax - r.top + 40 : 88) + 'px');
   info.style.setProperty('--info-pb', (infoState.keep ? r.bottom - sMin + 40 : 64) + 'px');
-  info.hidden = false; info.scrollTop = 0;
+  info.hidden = false; info.querySelector('.info-scroll').scrollTop = 0;
   info.classList.add('on');   // direct de infokleur zodra het splitsen begint, geen foto's meer zichtbaar
   // helemaal uit beeld schuiven, inclusief de overlap op de snijlijn en wat marge, zodat er niets van de naam blijft hangen
   const up = infoState.keep ? -r.top : -(sMax + SEAM + 8), down = infoState.keep ? H - r.bottom : H - sMin + 8;
