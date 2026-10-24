@@ -23,6 +23,11 @@ x = '<button class="testbtn" id="testbtn" aria-expanded'
 assert x in s; s = s.replace(x, '<button class="testbtn" id="testbtn" hidden aria-expanded', 1)
 x = "const btn = $('testbtn'), panel = $('panel');\n"
 assert x in s; s = s.replace(x, x + "// live site: test button only with ?test in the address (menge.nl/?test)\nif (new URLSearchParams(location.search).has('test')) btn.hidden = false;\n", 1)
+# Cases tweak button (since artifact v95): also only with ?test
+if 'id="casesTweak"' in s:
+    x = 'casesTweak.hidden = false;'
+    assert s.count(x) == 1
+    s = s.replace(x, "if (new URLSearchParams(location.search).has('test')) casesTweak.hidden = false;", 1)
 s = s.rstrip()
 while s.endswith('</body></html>'): s = s[:-len('</body></html>')].rstrip()
 
