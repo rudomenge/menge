@@ -1,0 +1,1082 @@
+<!doctype html><html lang="en"><head><meta charset=utf8><title>Rudo Menge · Design &amp; Art Direction</title><meta name="description" content="Rudo Menge, graphic designer and art director in Groningen. Posters, identities, books and exhibitions."><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<style>
+/* Bewust één wit thema, ook bij donkere modus op de telefoon. */
+/* Layout: een wand van horizontale banen, afwisselend naar links en rechts, eindeloos (verticaal kan ook via het paneel). Kantelen en vergroten. Geen tekst. */
+:root {
+  --bg: #ffffff;
+  --panel: #ffffff;
+  --ink: #1d1a1c;
+  --muted: #7a7276;
+  --line: #e7e2e4;
+  --accent: #d6336c;
+  --shadow-rgb: 40 20 30;
+  --shadow: 0 18px 40px -12px rgb(var(--shadow-rgb) / .35);
+  --ui: "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --gap: 28px;
+  --radius: 22px;
+  color-scheme: light;
+}
+
+[hidden] { display: none !important; }
+body { background: var(--bg); color: var(--ink); font-family: var(--ui); overflow-x: hidden; }
+
+.stage { position: relative; width: 100%; height: 100vh; overflow: hidden; touch-action: pan-y; -webkit-user-select: none; user-select: none; }
+.stage.endless { position: fixed; left: 0; top: 0; height: 100%; touch-action: none; cursor: grab; }
+.stage.endless.dragging { cursor: grabbing; }
+/* de wand is een oneindig vlak: banen staan absoluut op hun plek, JS bepaalt welke in beeld zijn */
+.wall { position: absolute; left: 0; top: 0; width: 0; height: 0; transform-origin: 0 0; }
+.lane { position: absolute; }
+.track { position: absolute; left: 0; top: 0; width: 100%; display: flex; flex-direction: column; will-change: transform; }
+.set { display: flex; flex-direction: column; gap: var(--gap); padding-bottom: var(--gap); }
+.tile {
+  --l: 0;
+  display: block; border-radius: var(--radius); overflow: hidden; background: var(--line);
+  position: relative; aspect-ratio: var(--r, .7);
+  box-shadow: 0 calc(var(--l) * 26px) calc(var(--l) * 50px) -14px rgb(var(--shadow-rgb) / calc(var(--l) * .5));
+}
+.tile img, .tile video { display: block; width: 100%; height: 100%; object-fit: cover; pointer-events: none; -webkit-user-drag: none; }
+/* Ken Burns: situatiefoto's zoomen langzaam in of uit, elk met een eigen tempo en richting */
+.tile.kb img { animation: kb var(--kb-d, 20s) ease-in-out var(--kb-delay, 0s) infinite alternate; transform-origin: var(--kb-o, 50% 50%); will-change: transform; }
+.wall.kb-off .tile.kb img { animation: none; }
+@keyframes kb { from { transform: scale(var(--kb-a, 1)); } to { transform: scale(var(--kb-b, 1.12)); } }
+@media (prefers-reduced-motion: reduce) { .tile.kb img { animation: none; } }
+/* horizontale stand: vaste tegelbreedte uit de beeldverhouding (Safari) */
+.wall.h .track { flex-direction: row; width: auto; height: 100%; }
+.wall.h .set { flex-direction: row; height: 100%; padding-bottom: 0; padding-right: var(--gap); }
+.wall.h .tile { height: var(--lh, 300px); width: calc(var(--lh, 300px) * var(--r, .7)); flex: none; aspect-ratio: auto; }
+.spacer { height: 0; }
+
+.finger {
+  position: fixed; left: 0; top: 0; width: 64px; height: 64px; margin: -32px 0 0 -32px; border-radius: 50%;
+  border: 2px solid var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent);
+  pointer-events: none; z-index: 15; opacity: 0; transition: opacity .2s;
+}
+.finger.on { opacity: 1; }
+
+/* Testknop + paneel */
+.testbtn {
+  position: fixed; z-index: 20;
+  right: calc(18px + env(safe-area-inset-right, 0px)); bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+  width: 52px; height: 52px; border-radius: 50%; border: 0; cursor: pointer;
+  background: var(--ink); color: var(--bg); box-shadow: var(--shadow);
+  display: grid; place-items: center;
+}
+.testbtn svg { width: 22px; height: 22px; }
+.testbtn:focus-visible, .panel :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.panel {
+  position: fixed; z-index: 20;
+  right: calc(18px + env(safe-area-inset-right, 0px)); bottom: calc(82px + env(safe-area-inset-bottom, 0px));
+  width: min(310px, calc(100vw - 36px)); max-height: calc(100% - 110px - env(safe-area-inset-bottom, 0px)); overflow-y: auto;
+  background: var(--panel); color: var(--ink); border: 1px solid var(--line); border-radius: 18px;
+  box-shadow: var(--shadow); padding: 18px; display: grid; gap: 14px; font-size: 13px;
+}
+.panel h2 { margin: 6px 0 0; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+.panel h2:first-child { margin-top: 0; }
+.row { display: grid; gap: 6px; }
+.row label { display: flex; justify-content: space-between; }
+.row output { color: var(--muted); font-variant-numeric: tabular-nums; }
+.row input[type=range] { width: 100%; accent-color: var(--accent); }
+.btns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.btns button, .seg button, .filebtn {
+  font: inherit; border: 1px solid var(--line); background: transparent; color: var(--ink);
+  border-radius: 10px; padding: 9px 10px; cursor: pointer; text-align: center;
+}
+.btns button:hover, .seg button:hover, .filebtn:hover { border-color: var(--ink); }
+.btns button.primary { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.seg { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; }
+.seg button { padding: 7px 0; }
+.seg.two { grid-template-columns: 1fr 1fr; }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.check { display: flex; align-items: center; gap: 8px; cursor: pointer; }
+.check input { accent-color: var(--accent); }
+.filebtn { display: block; }
+.filebtn input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.filebtn:focus-within { outline: 2px solid var(--accent); outline-offset: 2px; }
+.hint { color: var(--muted); font-size: 12px; margin: 0; line-height: 1.45; }
+
+/* testknop: zwarte achtergrond */
+:root.bg-dark { --bg: #000000; --panel: #1a1719; --ink: #f3eef0; --muted: #a89ea3; --line: #2f2a2d; --accent: #f06595; --shadow-rgb: 0 0 0; --shadow: 0 18px 40px -12px rgb(0 0 0 / .8); color-scheme: dark; }
+.seg.two { grid-template-columns: 1fr 1fr; }
+/* lege ruimte onder de wand, met de footer helemaal onderaan */
+.after {
+  height: var(--after, 900px); display: flex; align-items: flex-end;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 0 24px;
+}
+.foot { font-family: "Inter", ui-sans-serif, system-ui, sans-serif; font-weight: 700; font-size: 11px; letter-spacing: .01em; color: var(--ink); display: flex; gap: 1.2em; margin: 0; }
+/* logo: zweeft altijd in het midden boven de wand, ook tijdens scrollen; muis gaat er doorheen */
+.logo { position: fixed; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 10; margin: 0; }
+.logo button { all: unset; display: block; cursor: pointer; }
+.logo button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.logo img { display: block; width: 100%; height: auto; }
+/* logo opgebouwd uit twee lagen: zwart deel + tekst op een gekleurd vlak, zodat de kleur kan wisselen */
+.logo button { position: relative; border-radius: var(--logo-r, 0px); overflow: hidden; transition: transform .35s cubic-bezier(.2,.7,.2,1), box-shadow .35s; }
+.logo .logo-red { background: #ff0000; position: relative; }
+.logo.allblack .logo-red { background: #000000; }
+/* lichtkrant: de onderste regel loopt eindeloos van rechts naar links, binnen de marges van het logo */
+.ticker { position: absolute; left: 6.56%; width: 87.28%; top: 85.333%; height: 7.467%; overflow: hidden; display: none; }
+.logo.ticker-on .ticker { display: block; }
+.ticker-track { position: absolute; left: 0; top: 0; height: 100%; width: 411.37%; display: flex; animation: tick var(--tick, 40s) linear infinite; }
+.ticker-track img { width: 25%; height: 100%; flex: none; display: block; }
+@keyframes tick { to { transform: translateX(-25%); } }
+@media (prefers-reduced-motion: reduce) { .ticker-track { animation-play-state: paused; } }
+@media (hover: hover) { .logo.hoverzoom button:hover { transform: scale(var(--logo-zoom, 1.04)); } }
+@keyframes nudge { 0% { transform: translateY(0) rotate(0); } 18% { transform: translateY(-9px) rotate(-1.4deg); } 36% { transform: translateY(-9px) rotate(1.2deg); } 54% { transform: translateY(-9px) rotate(-0.8deg); } 72% { transform: translateY(-9px) rotate(0.5deg); } 100% { transform: translateY(-9px) rotate(0); } }
+.logo.lift button { animation: nudge .5s ease-out forwards; }
+@media (prefers-reduced-motion: reduce) { .logo.lift button { animation: none; transform: translateY(-9px); } }
+.logo button { touch-action: none; -webkit-touch-callout: none; -webkit-user-select: none; user-select: none; }
+.logo button img { pointer-events: none; -webkit-user-drag: none; }
+.logo.shadow button { box-shadow: 0 10px 28px -6px rgb(0 0 0 / .28); }
+.logo.shadow button:hover { box-shadow: 0 18px 40px -8px rgb(0 0 0 / .34); }
+/* één logo (het blokje) op alle schermen; breedte via het testpaneel */
+.logo-d { display: none; }
+.logo-m { width: var(--logo-w, 34vw); }
+.logo.corner { left: 4.4vw; top: env(safe-area-inset-top, 0px); transform: none; }
+/* info: het logo rekt uit, splitst (zwart omhoog, rood omlaag) en opent de infopagina */
+.letters { position: absolute; inset: 0; pointer-events: none; }
+.lcell { position: absolute; background: #000; backface-visibility: hidden; }
+.lcell.roll { overflow: hidden; }
+.lroll { position: absolute; inset: 0; }
+.lglyph { position: absolute; background: url(img/logo3-glyphs.png) no-repeat; }
+.fx { position: fixed; inset: 0; z-index: 30; pointer-events: none; }
+.fx-part { position: fixed; inset: 0; will-change: clip-path, transform; }
+.fx-top { background: #000; }
+.fx-bot { background: #000; }
+.fx-part img { position: absolute; display: block; height: auto; }
+.info {
+  --info-bg: #e4e4e4; --info-ink: #141414; --info-muted: #5c5c5c;
+  position: fixed; inset: 0; z-index: 25; overflow-y: auto; overscroll-behavior: contain;
+  background: var(--info-bg); color: var(--info-ink); opacity: 0;
+  font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+  padding-left: max(24px, env(safe-area-inset-left, 0px)); padding-right: max(24px, env(safe-area-inset-right, 0px));
+  padding-block: var(--info-pt, 88px) var(--info-pb, 64px);
+}
+.info.dark { --info-bg: #1c1c1c; --info-ink: #f2f2f2; --info-muted: #9a9a9a; }
+.info.black { --info-bg: #000000; --info-ink: #f2f2f2; --info-muted: #8f8f8f; }
+/* portret: groot rechts op de achtergrond, kijkt naar links de pagina in */
+.info-photo {
+  position: fixed; top: 0; bottom: 0; right: 0; width: min(100vh, 62vw); z-index: 0; pointer-events: none;
+  background: url("img/portret.jpg") right center / cover no-repeat;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 28%); mask-image: linear-gradient(to right, transparent 0%, #000 28%);
+}
+.info:not(.black):not(.dark) .info-photo { opacity: .9; }
+/* mobiel: tekst links in een kolom van ~60%, rechts het profiel van boven tot onder, kijkend naar de tekst */
+@media (max-width: 760px) {
+  .info-photo { width: 42%; background-position: 37% center;
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 16%); mask-image: linear-gradient(to right, transparent 0%, #000 16%); }
+  .info .info-inner { width: 58%; margin: 0; gap: 32px; }
+  .info p { font-size: 15px; }
+  .info ul { font-size: 14px; line-height: 1.6; }
+}
+.info-inner { position: relative; z-index: 1; }
+.info.on { opacity: 1; }
+.info-inner { max-width: 1240px; margin: 0 auto; display: grid; grid-template-columns: minmax(0, 520px); gap: 44px; }
+@media (min-width: 1100px) { .info-inner { grid-template-columns: minmax(0, 480px) minmax(0, 220px); } .info-inner > div:first-child { grid-row: span 2; } }
+.info h2 { font-size: 13px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--info-muted); margin: 0 0 14px; }
+.info p { font-size: clamp(17px, 1.6vw, 22px); line-height: 1.45; margin: 0 0 1em; max-width: 36em; text-wrap: pretty; }
+.info ul { list-style: none; margin: 0; padding: 0; font-size: 17px; line-height: 1.7; font-weight: 700; }
+.info .draft { font-size: 12px; color: var(--info-muted); margin-top: 8px; }
+/* klanten als logo's: wit op zwart, twee per regel; ontbreekt een logo, dan staat er gewoon de naam */
+.info .clients-logos { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 26px 28px; align-items: center; }
+.info .clients-logos li { min-height: 34px; display: flex; align-items: center; font-size: 15px; }
+.info .clients-logos img { display: block; max-height: 34px; max-width: 100%; width: auto; height: auto; }
+.info.black .clients-logos img, .info.dark .clients-logos img { filter: brightness(0) invert(1); }
+.info .contact a { color: inherit; text-decoration: none; border-bottom: 1px solid color-mix(in srgb, var(--info-ink) 35%, transparent); user-select: text; }
+.info .contact a:hover { border-bottom-color: var(--info-ink); }
+.closebtn {
+  position: fixed; z-index: 40; top: calc(14px + env(safe-area-inset-top, 0px)); right: calc(14px + env(safe-area-inset-right, 0px));
+  width: 44px; height: 44px; border-radius: 50%; border: 0; cursor: pointer; display: grid; place-items: center;
+  background: var(--close-bg, #141414); color: var(--close-ink, #fff);
+}
+.closebtn svg { width: 18px; height: 18px; }
+.closebtn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600&family=Inter:wght@400;700&display=swap">
+
+<div class="stage" id="stage"><main class="wall" id="wall" aria-label="Werk van Menge Ontwerpen"></main></div>
+<div class="spacer" id="spacer"></div>
+<div class="after" id="afterBox"><footer class="foot"><span>Rudo Menge</span><span>Design en art direction</span></footer></div>
+<h1 class="logo logo-d" id="logoD"><img src="img/logo-desktop.png" alt="Rudo Menge, Design &amp; Art Direction"></h1>
+<h1 class="logo logo-m hoverzoom shadow ticker-on" id="logoM"><button id="logoBtn" aria-label="Over Rudo Menge: Art Direction &amp; Design. Posters, Identities, Books, Exhibitions" aria-expanded="false" aria-controls="info"><img id="logoImg" src="img/logo3-nt.png" alt=""><span class="ticker" id="ticker"><span class="ticker-track"><img src="img/logo3-ticker.png" alt=""><img src="img/logo3-ticker.png" alt=""><img src="img/logo3-ticker.png" alt=""><img src="img/logo3-ticker.png" alt=""></span></span><span class="letters" id="letters" aria-hidden="true"></span></button></h1>
+<div class="fx" id="fx" hidden>
+  <div class="fx-part fx-top" id="fxTop"><img src="img/logo3-nt.png" alt=""></div>
+  <div class="fx-part fx-bot" id="fxBot"><img src="img/logo3-nt.png" alt=""></div>
+</div>
+<section class="info" id="info" hidden aria-label="Over Rudo Menge">
+  <div class="info-photo" role="img" aria-label="Portret van Rudo Menge"></div>
+  <div class="info-inner">
+    <div>
+      <h2>About</h2>
+      <p>Rudo Menge is a graphic designer and art director based in Groningen, the Netherlands. For more than twenty-five years the studio has made posters, identities, books and exhibitions for museums, theatres, orchestras and luxury brands.</p>
+      <p>The work grows out of long collaborations: two decades of exhibition campaigns and the magazine for the Groninger Museum, seasons for Noord Nederlands Toneel and Noord Nederlands Orkest, books with Studio Job, and print for Cartier.</p>
+      <p class="draft">Concepttekst, nog aan te passen.</p>
+    </div>
+    <div>
+      <h2>Selected clients</h2>
+      <ul class="clients-names" id="clientNames">
+        <li>Groninger Museum</li><li>Cartier</li><li>Forum Groningen</li><li>Noord Nederlands Toneel</li><li>Noord Nederlands Orkest</li><li>Studio Job</li><li>Kunstpunt</li><li>Catch</li>
+      </ul>
+      <ul class="clients-logos" id="clientLogos" hidden>
+        <li><img src="img/clients/groninger-museum.png" alt="Groninger Museum" onerror="this.replaceWith(this.alt)"></li><li><img src="img/clients/cartier.png" alt="Cartier" onerror="this.replaceWith(this.alt)"></li><li><img src="img/clients/forum-groningen.png" alt="Forum Groningen" onerror="this.replaceWith(this.alt)"></li><li><img src="img/clients/noord-nederlands-toneel.png" alt="Noord Nederlands Toneel" onerror="this.replaceWith(this.alt)"></li><li><img src="img/clients/noord-nederlands-orkest.png" alt="Noord Nederlands Orkest" onerror="this.replaceWith(this.alt)"></li><li><img src="img/clients/studio-job.png" alt="Studio Job" onerror="this.replaceWith(this.alt)"></li><li><img src="img/clients/kunstpunt.png" alt="Kunstpunt" onerror="this.replaceWith(this.alt)"></li><li><img src="img/clients/catch.png" alt="Catch" onerror="this.replaceWith(this.alt)"></li>
+      </ul>
+    </div>
+    <div>
+      <h2>Contact</h2>
+      <ul class="contact">
+        <li><a href="mailto:info@menge.nl">info@menge.nl</a></li>
+        <li><a href="tel:+31623866165">+31 (0)6 23 86 61 65</a></li>
+      </ul>
+    </div>
+  </div>
+</section>
+<button class="closebtn" id="closeInfo" hidden aria-label="Info sluiten"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19"/></svg></button>
+<div class="finger" id="finger"></div>
+
+<button class="testbtn" id="testbtn" hidden aria-expanded="false" aria-controls="panel" aria-label="Testpaneel openen">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 6h10M18 6h2M4 12h4M12 12h8M4 18h12"/><circle cx="16" cy="6" r="2"/><circle cx="10" cy="12" r="2"/><circle cx="18" cy="18" r="2"/></svg>
+</button>
+
+<section class="panel" id="panel" hidden aria-label="Testpaneel">
+  <h2>Beweging</h2>
+  <div class="btns">
+    <button class="primary" id="play">Pauze</button>
+    <button id="shuffle">Opnieuw schudden</button>
+  </div>
+  <div class="row">
+    <label for="speed">Snelheid <output id="speedOut"></output></label>
+    <input type="range" id="speed" min="0" max="120" step="2" value="20">
+  </div>
+  <div class="row">
+    <label for="auto">Wand schuift vanzelf omhoog <output id="autoOut"></output></label>
+    <input type="range" id="auto" min="0" max="200" step="5" value="40">
+  </div>
+
+  <h2>Wand</h2>
+  <div class="row">
+    <label>Achtergrond</label>
+    <div class="seg two" id="bgSeg">
+      <button data-bg="light" aria-pressed="true">wit</button><button data-bg="dark" aria-pressed="false">zwart</button>
+    </div>
+  </div>
+  <div class="row">
+    <label>Richting banen</label>
+    <div class="seg two" id="orient">
+      <button data-o="h">horizontaal</button><button data-o="v">verticaal</button>
+    </div>
+  </div>
+  <label class="check"><input type="checkbox" id="endless" checked> Eindeloos scrollen</label>
+  <label class="check"><input type="checkbox" id="showLogo" checked> Logo tonen</label>
+  <div class="row">
+    <label for="logoW">Logo breedte <output id="logoWOut"></output></label>
+    <input type="range" id="logoW" min="15" max="90" step="1" value="29">
+  </div>
+  <div class="row">
+    <label for="logoR">Logo hoeken <output id="logoROut"></output></label>
+    <input type="range" id="logoR" min="0" max="60" step="1" value="16">
+  </div>
+  <label class="check"><input type="checkbox" id="tickerOn" checked> Onderste regel als lichtkrant</label>
+  <div class="row">
+    <label for="tickDur">Lichtkrant, één rondje <output id="tickDurOut"></output></label>
+    <input type="range" id="tickDur" min="10" max="120" step="1" value="40">
+  </div>
+  <div class="row">
+    <label>Splitsen</label>
+    <div class="seg two" id="splitSeg">
+      <button data-v="mid">door Art Direction</button><button data-v="between">onder Rudo Menge</button>
+    </div>
+  </div>
+  <label class="check"><input type="checkbox" id="rollOn" checked> Letterrol: letter rolt naar beneden als je eroverheen gaat</label>
+  <div class="row">
+    <label>Losse letters bij hover</label>
+    <div class="seg" id="lettersSeg" style="grid-template-columns: repeat(3, 1fr)">
+      <button data-v="off">uit</button><button data-v="flip">omklappen</button><button data-v="glitch">glitch</button>
+    </div>
+  </div>
+  <div class="row">
+    <label for="letterRate">Letters per seconde <output id="letterRateOut"></output></label>
+    <input type="range" id="letterRate" min="1" max="15" step="1" value="5">
+  </div>
+  <label class="check"><input type="checkbox" id="hoverOn" checked> Logo vergroot bij hover</label>
+  <div class="row">
+    <label for="logoZoom">Vergroting logo <output id="logoZoomOut"></output></label>
+    <input type="range" id="logoZoom" min="1" max="1.15" step="0.01" value="1.04">
+  </div>
+  <label class="check"><input type="checkbox" id="shadowOn" checked> Schaduw onder logo</label>
+  <div class="row">
+    <label>Infopagina</label>
+    <div class="seg" id="infoBg" style="grid-template-columns: repeat(3, 1fr)">
+      <button data-v="black">zwart</button><button data-v="dark">donkergrijs</button><button data-v="light">lichtgrijs</button>
+    </div>
+  </div>
+  <div class="row">
+    <label>Na het splitsen</label>
+    <div class="seg two" id="bandsSeg">
+      <button data-v="off">banden weg</button><button data-v="keep">banden blijven</button>
+    </div>
+  </div>
+  <div class="row">
+    <label>Logo plek</label>
+    <div class="seg two" id="logoPos">
+      <button data-p="corner">linksboven</button><button data-p="center">midden</button>
+    </div>
+  </div>
+  <div class="row">
+    <label for="extra">Extra banen bij scrollen <output id="extraOut"></output></label>
+    <input type="range" id="extra" min="0" max="8" step="1" value="5">
+  </div>
+  <div class="row">
+    <label for="wzoom">Wand in- en uitzoomen <output id="wzoomOut"></output></label>
+    <input type="range" id="wzoom" min="60" max="180" step="5" value="100">
+  </div>
+  <div class="row">
+    <label for="after">Lege ruimte onder <output id="afterOut"></output></label>
+    <input type="range" id="after" min="0" max="1500" step="50" value="900">
+  </div>
+  <div class="row">
+    <label for="tilt">Kantelen <output id="tiltOut"></output></label>
+    <input type="range" id="tilt" min="-30" max="30" step="1" value="-12">
+  </div>
+  <div class="row">
+    <label for="scale">Alles vergroten <output id="scaleOut"></output></label>
+    <input type="range" id="scale" min="0.7" max="2" step="0.05" value="0.95">
+  </div>
+  <div class="row">
+    <label>Aantal banen in beeld</label>
+    <div class="seg" id="cols">
+      <button data-c="auto">auto</button><button data-c="a"></button><button data-c="b"></button><button data-c="c"></button><button data-c="d"></button>
+    </div>
+  </div>
+  <div class="row">
+    <label for="radius">Afronding hoeken <output id="radiusOut"></output></label>
+    <input type="range" id="radius" min="0" max="48" step="1" value="12">
+  </div>
+  <div class="row">
+    <label for="gap">Tussenruimte <output id="gapOut"></output></label>
+    <input type="range" id="gap" min="0" max="60" step="1" value="10">
+  </div>
+
+  <h2>Hover en aanraken</h2>
+  <div class="row">
+    <label for="zoom">Vergroting tegel <output id="zoomOut"></output></label>
+    <input type="range" id="zoom" min="1" max="1.3" step="0.01" value="1.04">
+  </div>
+  <div class="row">
+    <label for="nb">Buren komen mee <output id="nbOut"></output></label>
+    <input type="range" id="nb" min="0" max="1" step="0.05" value="0.5">
+  </div>
+  <div class="row">
+    <label for="reach">Bereik buren <output id="reachOut"></output></label>
+    <input type="range" id="reach" min="0.8" max="3" step="0.1" value="1.6">
+  </div>
+  <label class="check"><input type="checkbox" id="clientLogosOn"> Klanten als logo's (anders als namen)</label>
+  <label class="check"><input type="checkbox" id="kbOn" checked> Ken Burns: situatiefoto's zoomen langzaam</label>
+  <label class="check"><input type="checkbox" id="hoverStop"> Baan stopt bij hover</label>
+  <label class="check"><input type="checkbox" id="touchSlow" checked> Banen vertragen onder je vinger</label>
+  <label class="check"><input type="checkbox" id="touchLift"> Beelden tillen op onder je vinger (mobiel)</label>
+  <label class="check"><input type="checkbox" id="showFinger"> Vingerpunt tonen (mobiel)</label>
+
+  <div hidden><!-- eigen beelden: voorlopig uit -->
+  <h2>Inhoud</h2>
+  <label class="filebtn">Eigen beelden toevoegen<input type="file" id="files" accept="image/*" multiple></label>
+  <div class="btns">
+    <button id="onlyOwn">Alleen eigen beelden</button>
+    <button id="clearOwn">Eigen beelden wissen</button>
+  </div>
+  <p class="hint" id="count"></p>
+  </div>
+  <p class="hint">Spatie = pauze · R = schudden. Eindeloos: scroll, gebruik je trackpad of sleep de wand alle kanten op. Shift + scrollwiel = opzij.</p>
+</section>
+
+<script>
+// Slideshow-selectie uit de beeldenkeuze (ja + misschien). Elke keer laden geeft een nieuwe willekeurige volgorde.
+// Bronpaden en keuzes staan in slides.json; de vorige 44 beelden (img/*-s.jpg) blijven als reserve gepubliceerd.
+const SLIDES = [{"id":"gm-newson-detail-letters","r":1.3333,"c":"foto"},{"id":"menge-boeken-site-3d-v2-jk-2","r":1.0,"c":"boek"},{"id":"nno-season-2012","r":0.707,"c":"poster"},{"id":"ag-ploeg-08a","r":1.5015,"c":"foto"},{"id":"gm-2019-roosegaarde-poster","r":0.677,"c":"poster"},{"id":"gm-book-alias-spread-01-1340","r":0.719,"c":"boek"},{"id":"f-hohemesse","r":0.719,"c":"poster"},{"id":"mendini-thumb","r":0.696,"c":"boek"},{"id":"menge-boeken-site-3d-v2-jk-4","r":1.0,"c":"boek"},{"id":"gm-2021-rodin-book-insert-3000x2120","r":0.762,"c":"boek"},{"id":"img-1638","r":1.0,"c":"boek"},{"id":"img-1629","r":1.0,"c":"boek"},{"id":"book-tc","r":0.873,"c":"boek"},{"id":"graffiti-3000x2000-px","r":0.666,"c":"poster"},{"id":"f-01-eo-silver-book","r":0.719,"c":"boek"},{"id":"fat-vrouw-a0-def-2x3","r":0.666,"c":"poster"},{"id":"gm-2021-unzipped-a0","r":0.653,"c":"poster"},{"id":"gm-mag-jr-2","r":0.782,"c":"blad"},{"id":"ag-ploeg-11p","r":1.5015,"c":"foto"},{"id":"mq-omslag-013","r":0.889,"c":"boek"},{"id":"gm-brood-poster","r":0.669,"c":"poster"},{"id":"gm-jr-poster","r":0.668,"c":"poster"},{"id":"abri-nacht","r":0.794,"c":"foto"},{"id":"gm-2022-kleur-3000x2000","r":0.666,"c":"poster"},{"id":"bron-gm-teacoffee-allesandro","r":1.6155,"c":"boek"},{"id":"2022-gianni-versace-poster","r":0.706,"c":"poster"},{"id":"werkman-combi","r":1.6807,"c":"foto"},{"id":"gm-rodin-poster","r":0.719,"c":"poster"},{"id":"gm-mag-wilden-cover","r":0.719,"c":"blad"},{"id":"gm-2021-poster-nnt-fellini-3000x2000","r":0.666,"c":"poster"},{"id":"abri-1","r":0.811,"c":"foto"},{"id":"alaia-poster-v003","r":0.63,"c":"poster"},{"id":"gm-2021-book-erwin-3000x2000","r":0.729,"c":"boek"},{"id":"gm-poste-la-chapelle","r":0.706,"c":"poster"},{"id":"gm-gochina-b","r":0.707,"c":"poster"},{"id":"nnt-posters","r":0.666,"c":"poster"},{"id":"gm-folker-poster","r":0.707,"c":"poster"},{"id":"gm-rodin-thinker-poster","r":0.719,"c":"poster"},{"id":"f-a-poster-nno-2013","r":0.719,"c":"poster"},{"id":"rm-beme8983-hdr-mail","r":2.0,"c":"foto"},{"id":"mng-various-qee-gm","r":1.2315,"c":"object"},{"id":"spreads-optical-01-1340","r":0.632,"c":"boek"},{"id":"gm-bowie-thank-you-adv-def","r":0.666,"c":"poster"},{"id":"gm-mag-bowie2-2","r":0.782,"c":"blad"},{"id":"gm-a3-poster","r":0.631,"c":"poster"},{"id":"gm-2021-boek-iris-3000x2000","r":0.767,"c":"boek"},{"id":"gm-empel-poster-010","r":0.666,"c":"poster"},{"id":"gm-onbekende-rusland","r":0.707,"c":"poster"},{"id":"nnt-magazine-hamlet","r":0.707,"c":"blad"},{"id":"gm-2019-chihuly-poster","r":0.706,"c":"poster"},{"id":"gm-gochina-buitenmuur","r":1.3333,"c":"foto"},{"id":"gm-gochina-c","r":0.707,"c":"poster"},{"id":"menge-boeken-mendini-current-view","r":0.79,"c":"boek"},{"id":"job-840-book","r":0.706,"c":"boek"},{"id":"gm-mariko-mori-poster","r":0.707,"c":"poster"},{"id":"book-iris-bron","r":0.808,"c":"boek"},{"id":"newson-uitn","r":1.2225,"c":"object"},{"id":"gm-de-collectie-maart-2014","r":0.658,"c":"blad"},{"id":"jr-rudo","r":1.7778,"v":1,"c":"video"},{"id":"gm-poster-quinn-moss","r":0.675,"c":"poster"},{"id":"gm-2021-mag-jr","r":0.724,"c":"blad"},{"id":"gm-waterhouse-posters","r":0.707,"c":"poster"},{"id":"gm-2021-poster-newson-3000x2000","r":0.666,"c":"poster"},{"id":"gromm-omslag","r":0.666,"c":"boek"},{"id":"affiche-a0-def-converted","r":0.666,"c":"poster"},{"id":"gm-gochina-a","r":0.707,"c":"poster"},{"id":"book-rus-orient","r":0.627,"c":"boek"},{"id":"gm-2021-poster-laarman-3000x2000","r":0.654,"c":"poster"},{"id":"gm-chalayan-poster","r":0.683,"c":"poster"},{"id":"cycloon-ruw","r":1.5015,"c":"object"},{"id":"gm-abri-wk32","r":1.0,"c":"foto"},{"id":"gm-840-teacoffee","r":0.706,"c":"boek"},{"id":"f-b-poster-nno-2013","r":0.719,"c":"poster"},{"id":"ag-ploeg-11j","r":1.4749,"c":"foto"},{"id":"gm-lamsweerde-2x3","r":0.666,"c":"poster"},{"id":"job-a2-alter-ego-v02","r":0.691,"c":"poster"},{"id":"f-c-poster-nno-2013","r":0.719,"c":"poster"},{"id":"a0-affiche-repin-def02-converted","r":0.666,"c":"poster"},{"id":"menge-boeken-site-mag-current-view","r":0.732,"c":"blad"},{"id":"gm-book-alaia-10","r":1.5267,"c":"boek"},{"id":"mng-book-diaghilev","r":1.2315,"c":"boek"},{"id":"gm-onthemove-wk36","r":1.0,"c":"foto"},{"id":"gm-divers-showreel-v2","r":1.7778,"v":1,"c":"video"},{"id":"gm-divers-showreel","r":1.7778,"v":1,"c":"video"},{"id":"joram-krol-showreel","r":1.7778,"v":1,"c":"video"},{"id":"showreel-slow","r":1.7778,"v":1,"c":"video"},{"id":"tattoo-showreel","r":1.7778,"v":1,"c":"video"},{"id":"trump-serrano-showreel","r":1.7778,"v":1,"c":"video"},{"id":"gm-2021-erwin-olaf-silver-3000x2120","r":0.706,"c":"poster"},{"id":"menge-instagram-01-07","r":0.824,"c":"boek"}];
+const BASE = SLIDES.map(s => s.v ? 'vid/' + s.id + '.mp4' : 'img/s/' + s.id + '.jpg');
+// breedte / hoogte per beeld
+const RATIO = {};
+SLIDES.forEach((s, i) => RATIO[BASE[i]] = s.r);
+// soort per beeld (poster, boek, blad, foto, object, video), zodat een baan zoveel mogelijk afwisselt
+const KIND = {};
+SLIDES.forEach((s, i) => KIND[BASE[i]] = s.c);
+// zet een geschudde rij om: elke soort gelijkmatig over de rij verspreid, en zo min mogelijk dezelfde soort naast elkaar
+function vary(list) {
+  const kind = src => KIND[src] || 'eigen';
+  const buckets = new Map();
+  for (const src of list) { const k = kind(src); if (!buckets.has(k)) buckets.set(k, []); buckets.get(k).push(src); }
+  const keyed = [];
+  for (const b of buckets.values()) b.forEach((src, i) => keyed.push([(i + 0.15 + Math.random() * 0.7) / b.length, src]));
+  const out = keyed.sort((p, q) => p[0] - q[0]).map(p => p[1]);
+  for (let i = 1; i < out.length; i++) {
+    if (kind(out[i]) !== kind(out[i - 1])) continue;
+    for (let j = i + 1; j < out.length; j++) {
+      const k = kind(out[j]);
+      if (k !== kind(out[i - 1]) && (i + 1 >= out.length || k !== kind(out[i + 1]) || j === i + 1)) { [out[i], out[j]] = [out[j], out[i]]; break; }
+    }
+  }
+  return out;
+}
+
+const $ = id => document.getElementById(id);
+const stage = $('stage'), wall = $('wall'), root = document.documentElement, finger = $('finger');
+const state = {
+  speed: 30, playing: true, cols: 'auto', extra: 5, endless: true, horiz: true, tilt: -12, scale: 0.95,
+  zoom: 1.04, nb: 0.5, reach: 1.6, hoverStop: false, touchSlow: true, showFinger: false, touchLift: false,
+  own: [], onlyOwn: false,
+};
+// wand-zoom met twee vingers of trackpad: alleen de wand, het logo blijft even groot
+const pinch = { zoom: 1, min: 0.6, max: 1.8 };
+const touches = new Map();   // actieve aanrakingen op het scherm
+let pinchOn = null;
+let order = [];     // vaste volgorde, alleen schudden verandert die
+let lanes = new Map(), tiles = [], tilesDirty = true, gapPx = 10;
+const lanePos = new Map();
+
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const mod = (a, n) => ((a % n) + n) % n;
+const hash = k => { const x = Math.sin(k * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+const CHOICES = { v: [3, 4, 5, 6], h: [2, 3, 4, 5] };
+// schermmaat (vast, zodat de adresbalk op mobiel niet steeds alles opnieuw opbouwt)
+let VH = innerHeight, VW = innerWidth;
+const colCount = () => {
+  if (state.cols !== 'auto') return +state.cols;
+  if (state.horiz) return VH < 900 ? 3 : 4;
+  return innerWidth < 560 ? 3 : innerWidth < 900 ? 4 : innerWidth < 1200 ? 5 : 6;
+};
+const pool = () => state.onlyOwn && state.own.length ? state.own : BASE.concat(state.own);
+const pitch = () => (state.horiz ? VH : stage.clientWidth || VW) / colCount();   // baan + tussenruimte, in wandmaat
+const laneSize = () => Math.max(40, pitch() - gapPx);
+// hoogte van de wand (niet-eindeloos): één scherm plus de extra banen
+const regionH = () => Math.round(VH + state.extra * pitch() * state.scale);
+
+function reshuffle() { order = vary(shuffle(pool())); cycles.clear(); lanePos.clear(); clearLanes(); }
+
+function tile(src) {
+  const d = document.createElement('div');
+  d.className = 'tile'; d._l = 0;
+  d.style.setProperty('--r', RATIO[src] || 0.7);
+  if (src.endsWith('.mp4')) {
+    // bewegend beeld: stil, in een lus, met een stilstaand beeld tot de video speelt
+    const v = document.createElement('video');
+    for (const a of ['muted', 'loop', 'playsinline']) v.setAttribute(a, '');
+    v.muted = true; v.preload = 'auto'; v.poster = src.replace('.mp4', '.jpg'); v.src = src;
+    d.append(v); return d;
+  }
+  const img = new Image(); img.src = src; img.alt = ''; img.decoding = 'async'; img.draggable = false;
+  if (KIND[src] === 'foto') {
+    // Ken Burns: willekeurig in- of uitzoomen, vanuit een eigen punt, tussen 14 en 26 seconden heen
+    const zin = Math.random() < .5, z = 1.08 + Math.random() * .1;
+    d.classList.add('kb');
+    d.style.setProperty('--kb-a', zin ? 1 : z); d.style.setProperty('--kb-b', zin ? z : 1);
+    d.style.setProperty('--kb-d', (14 + Math.random() * 12).toFixed(1) + 's');
+    d.style.setProperty('--kb-delay', (-Math.random() * 20).toFixed(1) + 's');
+    d.style.setProperty('--kb-o', `${Math.round(20 + Math.random() * 60)}% ${Math.round(20 + Math.random() * 60)}%`);
+  }
+  d.append(img); return d;
+}
+
+// video's spelen alleen als ze in beeld zijn, zodat de pagina licht blijft
+setInterval(() => {
+  for (const v of document.querySelectorAll('.tile video')) {
+    const r = v.getBoundingClientRect();
+    const seen = r.right > 0 && r.left < innerWidth && r.bottom > 0 && r.top < innerHeight;
+    if (seen && v.paused) { v.muted = true; v.play().catch(() => {}); }
+    else if (!seen && !v.paused) v.pause();
+  }
+}, 400);
+
+const cycles = new Map();
+function cycleOrder(q) {
+  if (q === 0) return order;
+  if (!cycles.has(q)) {
+    let seed = (q * 2654435761) >>> 0;
+    const rnd = () => { seed = (seed + 0x6D2B79F5) >>> 0; let t = seed; t = Math.imul(t ^ t >>> 15, t | 1); t ^= t + Math.imul(t ^ t >>> 7, t | 61); return ((t ^ t >>> 14) >>> 0) / 4294967296; };
+    const a = order.slice();
+    for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+    cycles.set(q, vary(a));
+  }
+  return cycles.get(q);
+}
+
+function clearLanes() {
+  lanes.forEach(L => { L.ro.disconnect(); L.lane.remove(); });
+  lanes.clear(); tilesDirty = true;
+}
+
+// baan k: vaste inhoud en richting, zodat hij er hetzelfde uitziet als hij terugkomt
+function makeLane(k) {
+  if (!order.length) order = vary(shuffle(pool()));
+  const c = colCount(), n = order.length;
+  const per = Math.max(4, Math.ceil(n / c));
+  // elke groep van c banen krijgt een eigen volgorde, zodat herhaling bij eindeloos scrollen niet opvalt
+  const q = Math.floor(k / c), seq = cycleOrder(q), start = mod(k, c) * per;
+  const lane = document.createElement('div'); lane.className = 'lane';
+  const track = document.createElement('div'); track.className = 'track';
+  const set = document.createElement('div'); set.className = 'set';
+  for (let j = 0; j < per; j++) set.append(tile(seq[(start + j) % n]));
+  track.append(set); lane.append(track); wall.append(lane);
+  const kRef = -Math.floor(c / 2);              // bovenste/linker baan van het eerste scherm
+  const first = state.horiz ? 1 : -1;           // die gaat naar links (horizontaal) of omlaag (verticaal)
+  if (!lanePos.has(k)) lanePos.set(k, hash(k) * 3000);
+  const L = { k, lane, track, set, len: 0, copies: 1, key: '', dir: mod(k - kRef, 2) === 0 ? first : -first, mult: 0.85 + hash(k + 99) * 0.3 };
+  L.ro = new ResizeObserver(() => { L.len = state.horiz ? set.offsetWidth : set.offsetHeight; });
+  L.ro.observe(set);
+  lanes.set(k, L); tilesDirty = true;
+  return L;
+}
+
+// welk stuk van het (gekantelde) vlak is in beeld, en welke banen horen daarbij
+function layout(dt, hitLane) {
+  const vw = stage.clientWidth || VW, s = state.scale * pinch.zoom, th = state.tilt * Math.PI / 180;
+  const cos = Math.cos(th), sin = Math.sin(th);
+  // vanzelf doorschuiven: loopt zolang je niet scrolt, scrollen neemt het over, daarna komt het rustig terug
+  const idle = performance.now() - lastScroll > 1000 && !drag && Math.hypot(velX, velY) < 20;
+  autoV += ((state.endless && state.playing && idle ? state.auto : 0) - autoV) * Math.min(1, dt * (idle ? 1.5 : 6));
+  drift += autoV * dt;
+  // eindeloos: een camera die vrij over het vlak beweegt, met wat uitloop na slepen
+  if (state.endless && !drag) { camX += velX * dt; camY += velY * dt; const fr = Math.exp(-dt * 4); velX *= fr; velY *= fr; }
+  const offX = state.endless ? camX : 0;
+  const off = state.endless ? camY + drift : 0;
+  const viewH = state.endless ? VH : regionH();
+  const cx = vw / 2, cy = VH / 2;
+  wall.style.transform = `translate(${cx - offX}px, ${cy - off}px) rotate(${state.tilt}deg) scale(${s})`;
+  let pMin = Infinity, pMax = -Infinity, aMin = Infinity, aMax = -Infinity;
+  for (const [x, y] of [[offX, off], [offX + vw, off], [offX, off + viewH], [offX + vw, off + viewH]]) {
+    const dx = x - cx, dy = y - cy;
+    const wx = (cos * dx + sin * dy) / s, wy = (-sin * dx + cos * dy) / s;
+    const p = state.horiz ? wy : wx, a = state.horiz ? wx : wy;
+    pMin = Math.min(pMin, p); pMax = Math.max(pMax, p); aMin = Math.min(aMin, a); aMax = Math.max(aMax, a);
+  }
+  const P = pitch(), size = laneSize(), c = colCount();
+  const base = (c % 2 ? -P / 2 : 0) + gapPx / 2;   // eerste scherm precies gevuld bij 0° en 100%
+  const kMin = Math.floor((pMin - base) / P) - 1, kMax = Math.floor((pMax - base) / P) + 1;
+  for (const [k, L] of lanes) if (k < kMin || k > kMax) { L.ro.disconnect(); L.lane.remove(); lanes.delete(k); tilesDirty = true; }
+  for (let k = kMin; k <= kMax; k++) if (!lanes.has(k)) makeLane(k);
+
+  const A = Math.floor(aMin / 400) * 400 - P;      // begin van de baan (afgerond, zodat de stijl niet elk frame verandert)
+  const span = Math.ceil((aMax - A) / 400) * 400 + P;
+  for (const L of lanes.values()) {
+    const ps = L.k * P + base;
+    const key = state.horiz ? `left:${A}px;top:${ps}px;width:${span}px;height:${size}px` : `left:${ps}px;top:${A}px;width:${size}px;height:${span}px`;
+    if (key !== L.key) { L.lane.style.cssText = key; L.key = key; }
+    if (!L.len) continue;
+    const need = Math.ceil(span / L.len) + 2;
+    while (L.copies < need) {
+      const c2 = L.set.cloneNode(true); c2.setAttribute('aria-hidden', 'true');
+      L.track.append(c2); L.copies++; tilesDirty = true;
+    }
+    const stop = state.hoverStop && hitLane === L.lane;
+    let pos = lanePos.get(L.k);
+    if (state.playing && !stop) { pos += state.speed * L.mult * slow * dt * L.dir; lanePos.set(L.k, pos); }
+    const t = mod(-pos - A, L.len) - L.len;
+    L.track.style.transform = state.horiz ? `translate3d(${t}px, 0, 0)` : `translate3d(0, ${t}px, 0)`;
+    L.lane.style.zIndex = L.lane === hitLane ? 2 : '';
+  }
+  if (tilesDirty) { tiles = [...wall.querySelectorAll('.tile')]; tilesDirty = false; }
+}
+
+function applyGeometry() {
+  wall.classList.toggle('h', state.horiz);
+  root.style.setProperty('--lh', laneSize() + 'px');
+  stage.classList.toggle('endless', state.endless);
+  $('afterBox').hidden = state.endless;
+  stage.style.height = state.endless ? '' : regionH() + 'px';
+  updateSpacer();
+}
+// eindeloos: de pagina blijft langer worden zolang je scrolt
+function updateSpacer() {
+  const sp = $('spacer');
+  sp.style.height = '0px';   // eindeloos beweegt via de camera, niet via de scrollbalk van de pagina
+}
+addEventListener('scroll', updateSpacer, { passive: true });
+let drift = 0, autoV = 0, lastScroll = -1e9;
+let camX = 0, camY = 0, velX = 0, velY = 0, drag = null;
+// scrollwiel en trackpad: alle kanten op (shift + wiel = opzij)
+addEventListener('wheel', e => {
+  if (!state.endless || infoOpen || (e.target.closest && e.target.closest('.panel'))) return;
+  e.preventDefault();
+  if (e.ctrlKey) { zoomAbout({ x: e.clientX, y: e.clientY }, pinch.zoom * Math.exp(-e.deltaY * 0.01)); return; }
+  const k = e.deltaMode === 1 ? 40 : e.deltaMode === 2 ? VH : 1;
+  let dx = e.deltaX * k, dy = e.deltaY * k;
+  if (e.shiftKey && !dx) { dx = dy; dy = 0; }
+  camX += dx; camY += dy; velX = velY = 0;
+}, { passive: false });
+// slepen met muis of vinger
+stage.addEventListener('pointerdown', e => {
+  if (!state.endless || e.button !== 0) return;
+  drag = { x: e.clientX, y: e.clientY, t: performance.now(), id: e.pointerId };
+  stage.classList.add('dragging'); velX = velY = 0;
+});
+addEventListener('pointermove', e => {
+  if (!drag || e.pointerId !== drag.id) return;
+  const now = performance.now(), dx = e.clientX - drag.x, dy = e.clientY - drag.y, sec = Math.max(1, now - drag.t) / 1000;
+  camX -= dx; camY -= dy;
+  velX = 0.7 * velX + 0.3 * (-dx / sec); velY = 0.7 * velY + 0.3 * (-dy / sec);
+  drag.x = e.clientX; drag.y = e.clientY; drag.t = now; lastScroll = now;
+});
+const endDrag = e => {
+  if (!drag || e.pointerId !== drag.id) return;
+  if (performance.now() - drag.t > 80) velX = velY = 0;
+  drag = null; stage.classList.remove('dragging');
+};
+addEventListener('pointerup', endDrag); addEventListener('pointercancel', endDrag);
+for (const ev of ['wheel', 'touchmove', 'keydown']) addEventListener(ev, () => lastScroll = performance.now(), { passive: true });
+addEventListener('scroll', () => { if (Math.abs(scrollY - (window._sy || 0)) > 1) lastScroll = performance.now(); window._sy = scrollY; }, { passive: true });
+
+// Aanwijzer: muis (hover) en vinger (aanraken + vegen) werken met dezelfde lens
+const ptr = { x: 0, y: 0, active: false, touch: false };
+addEventListener('pointermove', e => {
+  if (e.pointerType === 'mouse') { ptr.x = e.clientX; ptr.y = e.clientY; ptr.active = true; ptr.touch = false; }
+  else if (ptr.touch) { ptr.x = e.clientX; ptr.y = e.clientY; }
+});
+document.addEventListener('mouseleave', () => { if (!ptr.touch) ptr.active = false; });
+stage.addEventListener('pointerdown', e => {
+  if (e.pointerType === 'mouse') return;
+  ptr.x = e.clientX; ptr.y = e.clientY; ptr.active = true; ptr.touch = true;
+});
+const endTouch = e => { if (e.pointerType !== 'mouse') { ptr.active = false; ptr.touch = false; } };
+addEventListener('pointerup', endTouch); addEventListener('pointercancel', endTouch);
+
+// twee vingers: in- en uitzoomen (tussen 60% en 180%) en tegelijk verschuiven met het midden tussen de vingers
+function pinchDist() { const [a, b] = [...touches.values()]; return Math.hypot(a.x - b.x, a.y - b.y) || 1; }
+function pinchMid() { const [a, b] = [...touches.values()]; return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }; }
+// zoomt rond schermpunt m: wat onder m ligt, blijft onder m liggen
+function zoomAbout(m, z) {
+  z = Math.min(pinch.max, Math.max(pinch.min, z));
+  if (state.endless) {
+    const k = z / pinch.zoom - 1, vw = stage.clientWidth || VW;
+    const dx = m.x + camX - vw / 2, dy = m.y + camY - VH / 2;
+    camX += k * dx; camY += k * dy; velX = velY = 0;
+  }
+  pinch.zoom = z;
+}
+stage.addEventListener('pointerdown', e => {
+  if (e.pointerType !== 'touch') return;
+  touches.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  if (touches.size === 2 && state.endless) {
+    drag = null; stage.classList.remove('dragging'); velX = velY = 0;
+    pinchOn = { d: pinchDist(), z: pinch.zoom, m: pinchMid() };
+  }
+});
+addEventListener('pointermove', e => {
+  if (!touches.has(e.pointerId)) return;
+  touches.set(e.pointerId, { x: e.clientX, y: e.clientY });
+  if (touches.size < 2 || !pinchOn || !state.endless) return;
+  const m = pinchMid();
+  camX -= m.x - pinchOn.m.x; camY -= m.y - pinchOn.m.y; pinchOn.m = m;
+  zoomAbout(m, pinchOn.z * pinchDist() / pinchOn.d);
+});
+const endPinch = e => { if (touches.delete(e.pointerId) && touches.size < 2) pinchOn = null; };
+addEventListener('pointerup', endPinch); addEventListener('pointercancel', endPinch);
+
+let last = performance.now(); var slow = 1;
+function frame(now) {
+  const dt = Math.min(0.05, (now - last) / 1000); last = now;
+
+  // op mobiel tillen de beelden standaard niet op tijdens het vegen (aan te zetten in het paneel)
+  const lens = ptr.active && (!ptr.touch || state.touchLift);
+  let hit = null, hitLane = null;
+  if (lens) {
+    const el = document.elementFromPoint(ptr.x, ptr.y);
+    hit = el && el.closest && el.closest('.tile');
+    hitLane = hit && hit.closest('.lane');
+  }
+  slow += ((ptr.touch && state.touchSlow ? 0.15 : 1) - slow) * Math.min(1, dt * 6);
+
+  layout(dt, hitLane);
+
+  // tegels optillen: de tegel onder de aanwijzer helemaal, buren een beetje, afnemend met afstand
+  const k = Math.min(1, dt * 9);
+  for (const t of tiles) {
+    let target = 0;
+    if (lens) {
+      if (t === hit) target = 1;
+      else if (state.nb > 0) {
+        const r = t.getBoundingClientRect();
+        if (r.bottom > -200 && r.top < innerHeight + 200 && r.right > -200 && r.left < innerWidth + 200) {
+          const d = Math.hypot(r.left + r.width / 2 - ptr.x, r.top + r.height / 2 - ptr.y);
+          const R = state.reach * (t.offsetWidth + t.offsetHeight) / 2 * state.scale;
+          const f = Math.max(0, 1 - d / R);
+          target = state.nb * f * f * (3 - 2 * f);
+        }
+      }
+    }
+    if (target === 0 && t._l === 0) continue;
+    t._l += (target - t._l) * k;
+    if (t._l < 0.002 && target === 0) t._l = 0;
+    t.style.transform = t._l ? `translateY(${(-6 * t._l).toFixed(2)}px) scale(${(1 + (state.zoom - 1) * t._l).toFixed(4)})` : '';
+    t.style.setProperty('--l', t._l.toFixed(3));
+    t.style.zIndex = t._l > 0.01 ? Math.round(t._l * 10) + 1 : '';
+  }
+
+  finger.classList.toggle('on', ptr.touch && state.showFinger);
+  if (ptr.touch) finger.style.transform = `translate(${ptr.x}px, ${ptr.y}px)`;
+  requestAnimationFrame(frame);
+}
+
+// Testpaneel
+const btn = $('testbtn'), panel = $('panel');
+// live site: test button only with ?test in the address (menge.nl/?test)
+if (new URLSearchParams(location.search).has('test')) btn.hidden = false;
+btn.addEventListener('click', () => { panel.hidden = !panel.hidden; btn.setAttribute('aria-expanded', !panel.hidden); });
+function setPlaying(p) { state.playing = p; $('play').textContent = p ? 'Pauze' : 'Afspelen'; }
+$('play').addEventListener('click', () => setPlaying(!state.playing));
+$('shuffle').addEventListener('click', reshuffle);
+function bindRange(id, fmt, apply) {
+  const el = $(id), out = $(id + 'Out');
+  const run = () => { out.textContent = fmt(+el.value); apply(+el.value); };
+  el.addEventListener('input', run); run();
+}
+let ready = false;
+// startstand vergroten: 110% op desktop, 95% op een aanraakscherm
+if (!matchMedia('(hover: none) and (pointer: coarse)').matches) $('scale').value = 1.15;
+bindRange('extra', v => v === 0 ? 'geen' : v + (v === 1 ? ' baan' : ' banen'), v => { state.extra = v; if (ready) applyGeometry(); });
+$('showLogo').addEventListener('change', e => { $('logoM').hidden = !e.target.checked; });
+// startstand logo: linksboven en 32% breed op desktop, midden en 77% breed op een smal scherm
+if (innerWidth <= 700) $('logoW').value = 77;
+const posBtns = [...$('logoPos').children];
+function setLogoPos(p) { $('logoM').classList.toggle('corner', p === 'corner'); posBtns.forEach(b => b.setAttribute('aria-pressed', b.dataset.p === p)); }
+posBtns.forEach(b => b.addEventListener('click', () => setLogoPos(b.dataset.p)));
+setLogoPos('center');   // startstand: logo in het midden, ook op desktop
+bindRange('logoW', v => v + '% van scherm', v => root.style.setProperty('--logo-w', v + 'vw'));
+bindRange('logoR', v => v === 0 ? 'recht' : v + ' px', v => root.style.setProperty('--logo-r', v + 'px'));
+$('endless').addEventListener('change', e => { state.endless = e.target.checked; scrollTo(0, 0); applyGeometry(); });
+bindRange('after', v => v + ' px', v => root.style.setProperty('--after', v + 'px'));
+bindRange('speed', v => v + ' px/s', v => state.speed = v);
+bindRange('auto', v => v === 0 ? 'uit' : v + ' px/s', v => state.auto = v);
+bindRange('tilt', v => v + '°', v => { state.tilt = v; if (ready) applyGeometry(); });
+bindRange('scale', v => Math.round(v * 100) + '%', v => { state.scale = v; if (ready) applyGeometry(); });
+bindRange('zoom', v => '+' + Math.round((v - 1) * 100) + '%', v => state.zoom = v);
+bindRange('nb', v => Math.round(v * 100) + '%', v => state.nb = v);
+bindRange('reach', v => v.toFixed(1) + ' tegels', v => state.reach = v);
+bindRange('radius', v => v + ' px', v => root.style.setProperty('--radius', v + 'px'));
+bindRange('gap', v => v + ' px', v => { gapPx = v; root.style.setProperty('--gap', v + 'px'); if (ready) applyGeometry(); });
+const segs = [...$('cols').children];
+function labelCols() {
+  const c = CHOICES[state.horiz ? 'h' : 'v'];
+  segs.slice(1).forEach((b, i) => { b.dataset.c = c[i]; b.textContent = c[i]; });
+  if (state.cols !== 'auto' && !c.includes(+state.cols)) state.cols = 'auto';
+  markCols();
+}
+const osegs = [...$('orient').children];
+const markOrient = () => osegs.forEach(b => b.setAttribute('aria-pressed', (b.dataset.o === 'h') === state.horiz));
+osegs.forEach(b => b.addEventListener('click', () => { state.horiz = b.dataset.o === 'h'; markOrient(); labelCols(); lanePos.clear(); clearLanes(); applyGeometry(); }));
+const markCols = () => segs.forEach(b => b.setAttribute('aria-pressed', b.dataset.c === String(state.cols)));
+segs.forEach(b => b.addEventListener('click', () => { state.cols = b.dataset.c; markCols(); lanePos.clear(); clearLanes(); applyGeometry(); }));
+labelCols(); markOrient();
+$('hoverStop').addEventListener('change', e => state.hoverStop = e.target.checked);
+$('touchSlow').addEventListener('change', e => state.touchSlow = e.target.checked);
+$('showFinger').addEventListener('change', e => state.showFinger = e.target.checked);
+$('touchLift').addEventListener('change', e => state.touchLift = e.target.checked);
+$('kbOn').addEventListener('change', e => wall.classList.toggle('kb-off', !e.target.checked));
+$('clientLogosOn').addEventListener('change', e => { $('clientLogos').hidden = !e.target.checked; $('clientNames').hidden = e.target.checked; });
+bindRange('wzoom', v => v + '%', v => zoomAbout({ x: (stage.clientWidth || VW) / 2, y: VH / 2 }, v / 100));
+
+function updateCount() {
+  $('count').textContent = `${BASE.length} werken uit de selectie` + (state.own.length ? ` + ${state.own.length} eigen beeld${state.own.length > 1 ? 'en' : ''}` : '') + (state.onlyOwn && state.own.length ? ' (alleen eigen beelden in beeld)' : '') + '.';
+  $('onlyOwn').textContent = state.onlyOwn ? 'Alle beelden' : 'Alleen eigen beelden';
+}
+$('files').addEventListener('change', e => {
+  const files = [...e.target.files].filter(f => f.type.startsWith('image/'));
+  e.target.value = '';
+  // eerst de beeldverhouding meten, dan pas toevoegen
+  Promise.all(files.map(f => new Promise(res => {
+    const url = URL.createObjectURL(f), im = new Image();
+    im.onload = () => { RATIO[url] = im.naturalWidth / im.naturalHeight; res(url); };
+    im.onerror = () => { URL.revokeObjectURL(url); res(null); };
+    im.src = url;
+  }))).then(urls => {
+    urls = urls.filter(Boolean);
+    if (!urls.length) return;
+    state.own.push(...urls); updateCount(); reshuffle();
+  });
+});
+$('onlyOwn').addEventListener('click', () => { state.onlyOwn = !state.onlyOwn; updateCount(); reshuffle(); });
+$('clearOwn').addEventListener('click', () => { state.own.forEach(u => URL.revokeObjectURL(u)); state.own = []; state.onlyOwn = false; updateCount(); reshuffle(); });
+updateCount();
+
+addEventListener('keydown', e => {
+  if (e.key === 'Escape' && infoOpen) { closeInfo(); return; }
+  if (infoOpen) return;
+  if (e.target.closest && e.target.closest('input, button')) return;
+  if (e.code === 'Space') { e.preventDefault(); setPlaying(!state.playing); }
+  if (e.key === 'r' || e.key === 'R') reshuffle();
+});
+addEventListener('resize', () => {
+  if (innerWidth === VW && Math.abs(innerHeight - VH) < 150) return;
+  const colsBefore = colCount();
+  VW = innerWidth; VH = innerHeight;
+  if (colCount() !== colsBefore) clearLanes();
+  applyGeometry();
+});
+
+if (matchMedia('(prefers-reduced-motion: reduce)').matches) setPlaying(false);
+applyGeometry(); ready = true;
+requestAnimationFrame(frame);
+
+const bgBtns = [...document.querySelectorAll('#bgSeg button')];
+bgBtns.forEach(b => b.addEventListener('click', () => {
+  document.documentElement.classList.toggle('bg-dark', b.dataset.bg === 'dark');
+  bgBtns.forEach(x => x.setAttribute('aria-pressed', x === b));
+}));
+// startstand: wit op desktop, zwart op een aanraakscherm
+bgBtns[1].click();   // startstand: zwarte achtergrond, op desktop en mobiel
+
+// ---- info-animatie (zie animatiesheet): logo rekt uit, splitst, infopagina verschijnt ----
+const logoEl = $('logoM'), fx = $('fx'), fxTop = $('fxTop'), fxBot = $('fxBot'), info = $('info'), closeBtn = $('closeInfo');
+var infoOpen = false;
+let busy = false, anims = [];
+const infoState = { bg: 'black', keep: false, split: 'mid' };
+const EASE = 'cubic-bezier(.7, 0, .2, 1)';
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const dur = ms => reduce ? 1 : ms;
+const wait = ms => new Promise(res => setTimeout(res, reduce ? 0 : ms));
+
+// splitlijn in logo-pixels (logo is 1250 × 750)
+// mid: recht dwars door "Art Direction"; between: onder "Rudo Menge", met een trapje om de staart van de g heen
+const LOGO_W = 1250;
+const SPLITS = { mid: { y: [328, 328, 328], x: [953, 1050] }, between: { y: [259, 280, 259], x: [953, 1050] } };
+function infoGeom() {
+  const r = $('logoBtn').getBoundingClientRect(), W = innerWidth, H = innerHeight;   // knop, inclusief hover-vergroting
+  const R = parseFloat(getComputedStyle(root).getPropertyValue('--logo-r')) || 0;
+  const k = r.width / LOGO_W, sp = SPLITS[infoState.split];
+  return { r, W, H, R, yL: r.top + sp.y[0] * k, yM: r.top + sp.y[1] * k, yR: r.top + sp.y[2] * k, x1: r.left + sp.x[0] * k, x2: r.left + sp.x[1] * k };
+}
+// vlakken als polygon (afgeronde hoeken als korte boogjes), zodat begin en eind evenveel punten hebben en vloeiend overlopen
+function arc(cx, cy, rad, a0, a1, n = 5) {
+  const pts = [];
+  for (let i = 0; i < n; i++) { const t = (a0 + (a1 - a0) * i / (n - 1)) * Math.PI / 180; pts.push([cx + rad * Math.cos(t), cy + rad * Math.sin(t)]); }
+  return pts;
+}
+const poly = pts => `polygon(${pts.map(([x, y]) => `${x.toFixed(1)}px ${y.toFixed(1)}px`).join(', ')})`;
+// het bovenste vlak loopt 2px door over het onderste, zodat er op de snijlijn geen licht naadje doorschemert
+const SEAM = 2;
+const topPoly = (L, T, Rr, R, g) => poly([...arc(L + R, T + R, R, 180, 270), ...arc(Rr - R, T + R, R, 270, 360),
+  [Rr, g.yR + SEAM], [g.x2, g.yR + SEAM], [g.x2, g.yM + SEAM], [g.x1, g.yM + SEAM], [g.x1, g.yL + SEAM], [L, g.yL + SEAM]]);
+const botPoly = (L, B, Rr, R, g) => poly([[L, g.yL], [g.x1, g.yL], [g.x1, g.yM], [g.x2, g.yM], [g.x2, g.yR], [Rr, g.yR],
+  ...arc(Rr - R, B - R, R, 0, 90), ...arc(L + R, B - R, R, 90, 180)]);
+
+async function openInfo() {
+  if (skipClick) { skipClick = false; return; }   // net gesleept, dan geen infopagina
+  if (busy || infoOpen) return;
+  busy = true; infoOpen = true;
+  const g = infoGeom(), { r, W, H, R } = g;
+  const tickerOn = logoEl.classList.contains('ticker-on');
+  for (const img of [fxTop.firstElementChild, fxBot.firstElementChild]) {
+    Object.assign(img.style, { left: r.left + 'px', top: r.top + 'px', width: r.width + 'px' });
+    img.src = tickerOn ? 'img/logo3-nt.png' : 'img/logo3.png';
+  }
+  // eerst de lichtkrant laten verdwijnen, pas daarna de animatie (zonder lichtkrant)
+  fx.querySelectorAll('.ticker').forEach(n => n.remove());
+  if (tickerOn) await $('ticker').animate([{ opacity: 1 }, { opacity: 0 }], { duration: dur(220), easing: 'ease-out', fill: 'forwards' }).finished;
+  fx.hidden = false; logoEl.style.visibility = 'hidden';
+  $('logoBtn').setAttribute('aria-expanded', 'true');
+  // 1. uitrekken: het blok groeit naar alle kanten tot het scherm vol en zwart is
+  const o1 = { duration: dur(560), easing: EASE, fill: 'forwards' };
+  const a = fxTop.animate([{ clipPath: topPoly(r.left, r.top, r.right, R, g) }, { clipPath: topPoly(0, 0, W, 0, g) }], o1);
+  const b = fxBot.animate([{ clipPath: botPoly(r.left, r.bottom, r.right, R, g) }, { clipPath: botPoly(0, H, W, 0, g) }], o1);
+  await Promise.all([a.finished, b.finished]);
+  await wait(160);
+  // 2. splitsen: bovenste deel omhoog, onderste deel omlaag, de infopagina komt eronder tevoorschijn
+  info.classList.toggle('dark', infoState.bg === 'dark'); info.classList.toggle('black', infoState.bg === 'black');
+  const sMax = Math.max(g.yL, g.yM, g.yR), sMin = Math.min(g.yL, g.yM, g.yR);
+  info.style.setProperty('--info-pt', (infoState.keep ? sMax - r.top + 40 : 88) + 'px');
+  info.style.setProperty('--info-pb', (infoState.keep ? r.bottom - sMin + 40 : 64) + 'px');
+  info.hidden = false; info.scrollTop = 0;
+  info.classList.add('on');   // direct de infokleur zodra het splitsen begint, geen foto's meer zichtbaar
+  // helemaal uit beeld schuiven, inclusief de overlap op de snijlijn en wat marge, zodat er niets van de naam blijft hangen
+  const up = infoState.keep ? -r.top : -(sMax + SEAM + 8), down = infoState.keep ? H - r.bottom : H - sMin + 8;
+  const o2 = { duration: dur(820), easing: EASE, fill: 'forwards' };
+  const c = fxTop.animate([{ transform: 'translateY(0px)' }, { transform: `translateY(${up}px)` }], o2);
+  const d = fxBot.animate([{ transform: 'translateY(0px)' }, { transform: `translateY(${down}px)` }], o2);
+  anims = [a, b, c, d];
+  await Promise.all([c.finished, d.finished]);
+  root.style.setProperty('--close-bg', infoState.keep || infoState.bg !== 'light' ? '#f2f2f2' : '#141414');
+  root.style.setProperty('--close-ink', infoState.keep || infoState.bg !== 'light' ? '#141414' : '#ffffff');
+  closeBtn.hidden = false; closeBtn.focus({ preventScroll: true });
+  busy = false;
+}
+async function closeInfo() {
+  if (busy || !infoOpen) return;
+  busy = true; closeBtn.hidden = true;
+  const [a, b, c, d] = anims;
+  c.reverse(); d.reverse();
+  await Promise.all([c.finished, d.finished]);
+  info.classList.remove('on'); info.hidden = true;
+  a.reverse(); b.reverse();
+  await Promise.all([a.finished, b.finished]);
+  anims.forEach(x => x.cancel()); anims = [];
+  fx.hidden = true; logoEl.style.visibility = '';
+  // lichtkrant weer laten verschijnen
+  $('ticker').getAnimations().forEach(x => x.cancel());
+  $('ticker').animate([{ opacity: 0 }, { opacity: 1 }], { duration: dur(400), easing: 'ease-in' });
+  logoBtnEl.classList.remove('press');
+  $('logoBtn').setAttribute('aria-expanded', 'false'); $('logoBtn').focus({ preventScroll: true });
+  infoOpen = false; busy = false;
+}
+$('logoBtn').addEventListener('click', openInfo);
+// telefoon: een tikje opent de infopagina; vasthouden en slepen zet het logo ergens anders neer (boven, onder, ...)
+const logoBtnEl = $('logoBtn');
+let holdT = 0, logoDrag = null, skipClick = false, pressAt = null;
+logoBtnEl.addEventListener('pointerdown', e => {
+  if (e.pointerType !== 'touch' || infoOpen || busy) return;
+  skipClick = false;
+  logoBtnEl.setPointerCapture(e.pointerId);
+  pressAt = { x: e.clientX, y: e.clientY, id: e.pointerId };
+  holdT = setTimeout(() => {
+    const r = logoEl.getBoundingClientRect();
+    logoDrag = { id: pressAt.id, dx: pressAt.x - (r.left + r.width / 2), dy: pressAt.y - (r.top + r.height / 2) };
+    logoBtnEl.classList.remove('press');
+    logoEl.classList.add('lift'); navigator.vibrate?.(15);
+    logoEl.style.transform = 'translate(-50%, -50%)';
+    logoEl.style.transition = 'none';
+  }, 380);
+});
+logoBtnEl.addEventListener('pointermove', e => {
+  if (e.pointerType !== 'touch') return;
+  if (logoDrag && e.pointerId === logoDrag.id) {
+    const r = logoEl.getBoundingClientRect();
+    const x = Math.min(innerWidth - r.width / 2, Math.max(r.width / 2, e.clientX - logoDrag.dx));
+    const y = Math.min(innerHeight - r.height / 2, Math.max(r.height / 2, e.clientY - logoDrag.dy));
+    logoEl.classList.remove('corner');
+    Object.assign(logoEl.style, { left: x + 'px', top: y + 'px' });
+    return;
+  }
+  // bewoog de vinger al voordat het slepen begon: dan is het gewoon vegen, geen logo
+  if (pressAt && Math.hypot(e.clientX - pressAt.x, e.clientY - pressAt.y) > 10) {
+    clearTimeout(holdT); logoBtnEl.classList.remove('press'); pressAt = null;
+  }
+});
+const endLogoPress = e => {
+  if (e.pointerType !== 'touch') return;
+  clearTimeout(holdT);
+  if (logoDrag && e.pointerId === logoDrag.id) {
+    logoDrag = null; skipClick = true; logoEl.style.transition = '';
+    if (logoEl.classList.contains('lift')) { const y = parseFloat(logoEl.style.top); if (!isNaN(y)) logoEl.style.top = (y - 9) + 'px'; }
+    logoEl.classList.remove('lift');
+    logoBtnEl.classList.remove('press');
+  } else if (e.type === 'pointercancel') { logoBtnEl.classList.remove('press'); logoEl.classList.remove('lift'); }
+  pressAt = null;   // bij een tikje blijft 'press' staan tot de infopagina open is
+};
+logoBtnEl.addEventListener('contextmenu', e => e.preventDefault());
+logoBtnEl.addEventListener('pointerup', endLogoPress);
+logoBtnEl.addEventListener('pointercancel', endLogoPress);
+closeBtn.addEventListener('click', closeInfo);
+function bindSeg(id, get, set) {
+  const bs = [...$(id).children];
+  const mark = () => bs.forEach(b => b.setAttribute('aria-pressed', get() === b.dataset.v));
+  bs.forEach(b => b.addEventListener('click', () => { set(b.dataset.v); mark(); }));
+  mark();
+}
+function setTicker(on) {
+  logoEl.classList.toggle('ticker-on', on);
+  $('logoImg').src = on ? 'img/logo3-nt.png' : 'img/logo3.png';
+}
+$('tickerOn').addEventListener('change', e => setTicker(e.target.checked));
+bindRange('tickDur', v => v + ' s', v => root.style.setProperty('--tick', v + 's'));
+$('hoverOn').addEventListener('change', e => logoEl.classList.toggle('hoverzoom', e.target.checked));
+$('shadowOn').addEventListener('change', e => logoEl.classList.toggle('shadow', e.target.checked));
+bindRange('logoZoom', v => '+' + Math.round((v - 1) * 100) + '%', v => root.style.setProperty('--logo-zoom', v));
+bindSeg('infoBg', () => infoState.bg, v => infoState.bg = v);
+bindSeg('splitSeg', () => infoState.split, v => infoState.split = v);
+
+// letters bij hover: losse letters klappen om of glitchen even naar een andere letter uit het logo, en dan weer terug
+// per letter: x, y, b, h (logo-pixels, 1250 × 750), plek in logo3-glyphs.png, basislijn van de regel
+const GLYPHS = [[117,96,116,137,0,232],[238,133,96,104,120,232],[341,96,103,140,220,232],[450,129,106,107,327,232],[592,96,141,137,437,232],[742,130,103,106,582,232],[850,130,97,103,689,232],[952,130,100,137,790,232],[1058,130,103,106,894,232],[98,257,134,137,1001,392],[234,292,66,102,1139,392],[302,263,65,132,1209,392],[404,257,123,138,1278,392],[533,257,35,137,1405,392],[578,292,66,102,1444,392],[643,291,103,106,1514,392],[747,291,100,106,1621,392],[846,263,65,132,1725,392],[918,257,35,137,1794,392],[958,290,106,107,1833,392],[1070,291,97,103,1943,392],[242,418,129,140,2044,555],[406,419,123,138,2177,555],[531,453,103,106,2304,555],[633,453,94,106,2411,555],[733,419,35,137,2509,555],[774,453,100,137,2548,555],[884,453,97,103,2652,555],[981,432,49,49,2753,555]].map(([x, y, w, h, sx, base]) => ({ x, y, w, h, sx, base }));
+const SHEET_W = 2806, SHEET_H = 140, LOGO_H = 750;
+const TARGETS = GLYPHS.slice(0, -1);   // het ® zelf laten staan, wel als vervanger gebruiken
+const letterState = { mode: 'off', rate: 5, roll: true };
+const lettersEl = $('letters'), busyCells = new Set();
+let letterTimer = 0;
+const pct = (v, of) => (v / of * 100).toFixed(3) + '%';
+const pick = arr => arr[Math.floor(Math.random() * arr.length)];
+// letter g in het vak van letter c zetten: op dezelfde basislijn, horizontaal gecentreerd
+function showGlyph(inner, c, g) {
+  const k = Math.min(1, (c.w + 8) / g.w), w = g.w * k, h = g.h * k;   // te brede letters iets kleiner, zodat ze in het vak passen
+  const gx = c.x + (c.w - w) / 2, gy = c.base - (g.base - g.y) * k;
+  Object.assign(inner.style, {
+    left: pct(gx - c.x, c.w), top: pct(gy - c.y, c.h), width: pct(w, c.w), height: pct(h, c.h),
+    backgroundSize: `${pct(SHEET_W, g.w)} ${pct(SHEET_H, g.h)}`,
+    backgroundPosition: `${pct(g.sx, SHEET_W - g.w)} 0`
+  });
+}
+async function swapLetter() {
+  const free = TARGETS.filter(c => !busyCells.has(c));
+  if (!free.length) return;
+  const c = pick(free); busyCells.add(c);
+  const cell = document.createElement('span'), inner = document.createElement('span');
+  cell.className = 'lcell'; inner.className = 'lglyph'; cell.append(inner);
+  Object.assign(cell.style, { left: pct(c.x, LOGO_W), top: pct(c.y, LOGO_H), width: pct(c.w, LOGO_W), height: pct(c.h, LOGO_H) });
+  showGlyph(inner, c, c); lettersEl.append(cell);
+  const others = () => pick(GLYPHS.filter(g => g !== c));
+  try {
+    if (letterState.mode === 'flip') {
+      // als een oude klapkalender: wegklappen, andere letter, terugklappen, een paar keer, dan weer het origineel
+      const steps = 2 + Math.floor(Math.random() * 3);
+      for (let i = 0; i <= steps; i++) {
+        await cell.animate([{ transform: 'perspective(300px) rotateX(0deg)', filter: 'brightness(1)' }, { transform: 'perspective(300px) rotateX(-90deg)', filter: 'brightness(.35)' }],
+          { duration: 75, easing: 'ease-in', fill: 'forwards' }).finished;
+        showGlyph(inner, c, i === steps ? c : others());
+        await cell.animate([{ transform: 'perspective(300px) rotateX(90deg)', filter: 'brightness(.35)' }, { transform: 'perspective(300px) rotateX(0deg)', filter: 'brightness(1)' }],
+          { duration: 95, easing: 'ease-out', fill: 'forwards' }).finished;
+        if (i < steps) await wait(60 + Math.random() * 120);
+      }
+    } else {
+      // statisch: snel wisselen, verspringen en flikkeren, dan in één keer weer goed
+      const steps = 5 + Math.floor(Math.random() * 5);
+      for (let i = 0; i < steps; i++) {
+        showGlyph(inner, c, others());
+        const band = Math.random() < .5 ? `inset(${Math.round(Math.random() * 50)}% 0 ${Math.round(Math.random() * 40)}% 0)` : 'none';
+        Object.assign(inner.style, { transform: `translateX(${((Math.random() - .5) * 18).toFixed(1)}%)`, clipPath: band, opacity: Math.random() < .2 ? .35 : 1 });
+        await wait(40 + Math.random() * 50);
+      }
+      Object.assign(inner.style, { transform: '', clipPath: '', opacity: '' });
+      showGlyph(inner, c, c);
+      await wait(40);
+    }
+  } finally { cell.remove(); busyCells.delete(c); }
+}
+function startLetters() {
+  if (reduce || letterState.mode === 'off' || letterTimer || infoOpen) return;
+  swapLetter();
+  letterTimer = setInterval(() => { if (busyCells.size < 4) swapLetter(); }, 1000 / letterState.rate);
+}
+function stopLetters() { clearInterval(letterTimer); letterTimer = 0; }
+$('logoBtn').addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') startLetters(); });
+$('logoBtn').addEventListener('pointerleave', stopLetters);
+$('logoBtn').addEventListener('click', () => { stopLetters(); lettersEl.replaceChildren(); busyCells.clear(); }, true);
+bindSeg('lettersSeg', () => letterState.mode, v => { letterState.mode = v; stopLetters(); });
+// letterrol: kom je met de muis op een letter, dan rolt die letter één keer naar beneden
+let overGlyph = null;
+async function rollGlyph(c, delay) {
+  if (busyCells.has(c)) return;
+  busyCells.add(c);
+  const cell = document.createElement('span'), wrap = document.createElement('span');
+  cell.className = 'lcell roll'; wrap.className = 'lroll'; cell.append(wrap);
+  Object.assign(cell.style, { left: pct(c.x, LOGO_W), top: pct(c.y, LOGO_H), width: pct(c.w, LOGO_W), height: pct(c.h, LOGO_H) });
+  for (let i = 0; i < 2; i++) {   // de letter zelf, en een kopie er direct boven die zijn plek inneemt
+    const g = document.createElement('span'); g.className = 'lglyph'; showGlyph(g, c, c);
+    if (i) g.style.top = '-100%';
+    wrap.append(g);
+  }
+  lettersEl.append(cell);
+  try {
+    await cell.animate([{ opacity: 1 }, { opacity: 1 }], { duration: delay }).finished;
+    await wrap.animate([{ transform: 'translateY(0)' }, { transform: 'translateY(100%)' }],
+      { duration: 380 + Math.random() * 220, easing: 'cubic-bezier(.6, 0, .2, 1)', fill: 'forwards' }).finished;
+  } finally { cell.remove(); busyCells.delete(c); }
+}
+$('logoBtn').addEventListener('pointermove', e => {
+  if (e.pointerType !== 'mouse' || !letterState.roll || reduce || infoOpen) return;
+  const r = $('logoBtn').getBoundingClientRect();
+  const x = (e.clientX - r.left) / r.width * LOGO_W, y = (e.clientY - r.top) / r.height * LOGO_H;
+  const c = GLYPHS.find(c => x >= c.x - 4 && x <= c.x + c.w + 4 && y >= c.y - 4 && y <= c.y + c.h + 4) || null;
+  if (c && c !== overGlyph) rollGlyph(c, 0);
+  overGlyph = c;
+});
+$('logoBtn').addEventListener('pointerleave', () => { overGlyph = null; });
+$('rollOn').addEventListener('change', e => { letterState.roll = e.target.checked; });
+bindRange('letterRate', v => v, v => { letterState.rate = v; if (letterTimer) { stopLetters(); startLetters(); } });
+bindSeg('bandsSeg', () => infoState.keep ? 'keep' : 'off', v => infoState.keep = v === 'keep');
+</script>
+
+</body></html>
