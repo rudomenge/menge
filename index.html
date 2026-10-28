@@ -328,8 +328,8 @@ body { background: var(--bg); color: var(--ink); font-family: var(--ui); overflo
   <div class="info-inner">
     <div>
       <h2>About</h2>
-      <p>Rudo Menge is a graphic designer and art director based in Groningen, the Netherlands. For more than twenty-five years the studio has made posters, identities, books and exhibitions for museums, theatres, orchestras and luxury brands.</p>
-      <p>The work grows out of long collaborations: two decades of exhibition campaigns and the magazine for the Groninger Museum, seasons for Noord Nederlands Toneel and Noord Nederlands Orkest, books with Studio Job, and print for Cartier.</p>
+      <p>Rudo Menge is a graphic designer and art director in Groningen. With more than twenty-five years of experience in campaigns, book designs, graphic identities and exhibition design, the studio is open to new projects.</p>
+      <p>Selected projects include exhibition campaigns and the magazine for the Groninger Museum, campaigns for Noord-Nederlands Toneel and Noord-Nederlands Orkest, book designs for Studio Job and Iris van Herpen, and print for Cartier.</p>
     </div>
     <div>
       <h2>Selected clients</h2>
@@ -1668,7 +1668,7 @@ $('casesPrev').addEventListener('click', () => stepCase(-1));
 addEventListener('resize', layoutCube);
 layoutCube();
 </script>
-<div class="ver" id="ver" aria-hidden="true">1.3</div>
+<div class="ver" id="ver" aria-hidden="true">1.4</div>
 <style>
 .ver { position: fixed; z-index: 45; left: calc(10px + env(safe-area-inset-left, 0px)); top: calc(8px + env(safe-area-inset-top, 0px));
   font: 400 10px/1 "Inter", ui-sans-serif, system-ui, sans-serif; letter-spacing: .04em; font-variant-numeric: tabular-nums;
@@ -1676,7 +1676,7 @@ layoutCube();
 </style>
 <script>
 (() => {
-  const el = document.getElementById('ver'), V = '1.3';
+  const el = document.getElementById('ver'), V = '1.4';
   let seen = false; try { seen = localStorage.getItem('mv') === '1'; } catch (e) {}
   fetch('/api/count', { method: seen ? 'GET' : 'POST' }).then(r => r.json()).then(d => {
     if (typeof d.n !== 'number') return;
