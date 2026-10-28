@@ -38,6 +38,8 @@ s += f'''
 .ver {{ position: fixed; z-index: 45; left: calc(10px + env(safe-area-inset-left, 0px)); top: calc(8px + env(safe-area-inset-top, 0px));
   font: 400 10px/1 "Inter", ui-sans-serif, system-ui, sans-serif; letter-spacing: .04em; font-variant-numeric: tabular-nums;
   color: #fff; mix-blend-mode: difference; opacity: .7; pointer-events: none; user-select: none; }}
+/* only on the homepage: hidden while About or Cases is open */
+body:has(#info:not([hidden])) .ver, body:has(#cases:not([hidden])) .ver {{ display: none; }}
 </style>
 <script>
 (() => {{
