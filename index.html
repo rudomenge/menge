@@ -41,6 +41,8 @@ body { background: var(--bg); color: var(--ink); font-family: var(--ui); overflo
 /* Ken Burns: situatiefoto's zoomen langzaam in of uit, elk met een eigen tempo en richting */
 .tile.kb.near img { animation: kb var(--kb-d, 20s) ease-in-out var(--kb-delay, 0s) infinite alternate; transform-origin: var(--kb-o, 50% 50%); will-change: transform; }
 .wall.kb-off .tile.kb img { animation: none; }
+/* tabblad op de achtergrond: alle animaties staan stil */
+.asleep *, .asleep *::before, .asleep *::after { animation-play-state: paused !important; }
 @keyframes kb { from { transform: scale(var(--kb-a, 1)); } to { transform: scale(var(--kb-b, 1.12)); } }
 @media (prefers-reduced-motion: reduce) { .tile.kb img { animation: none; } }
 /* horizontale stand: vaste tegelbreedte uit de beeldverhouding (Safari) */
@@ -137,6 +139,11 @@ body { background: var(--bg); color: var(--ink); font-family: var(--ui); overflo
   :root[data-hover="grow"] .navbtn:hover { transform: scale(1.08); }
 }
 
+/* laadbalkje: een haarlijn onderin het logoblok, loopt vol met de zes tegelkleuren tot de beelden in beeld er zijn */
+.loadbar { position: absolute; left: 6.56%; width: 87.28%; top: 95.4%; height: max(1.5px, .45%); border-radius: 1px; overflow: hidden; background: rgb(255 255 255 / .16); opacity: 0; transition: opacity .6s ease; pointer-events: none; }
+.loadbar.on { opacity: 1; }
+.loadbar.done { opacity: 0; transition-delay: .5s; }
+.loadbar i { display: block; height: 100%; transform-origin: 0 50%; transform: scaleX(.03); transition: transform .6s cubic-bezier(.2, .8, .2, 1); background: linear-gradient(90deg, #ff8fc0, #ffd84a, #7cc8f5, #7fe0b2, #c4a2ff, #ffa05c); }
 .logo-letters { position: absolute; left: 0; top: 0; width: 100%; height: auto; display: block; pointer-events: none; }
 .finger {
   position: fixed; left: 0; top: 0; width: 64px; height: 64px; margin: -32px 0 0 -32px; border-radius: 50%;
@@ -607,7 +614,7 @@ const regionH = () => Math.round(VH + state.extra * pitch() * state.scale);
 function reshuffle() { order = vary(shuffle(pool())); cycles.clear(); lanePos.clear(); clearLanes(); }
 
 // een tegel blijft antraciet tot het beeld er echt is; ook klonen of een gemiste laadmelding houden het niet tegen
-setInterval(() => { for (const im of document.querySelectorAll('.tile img.pending')) if (im.complete && im.naturalWidth) im.classList.remove('pending'); }, 250);
+setInterval(() => { if (!document.hidden) for (const im of document.querySelectorAll('.tile img.pending')) if (im.complete && im.naturalWidth) im.classList.remove('pending'); }, 250);
 // Memphis-pastel, wel verzadigd: zes kleuren, voor de beginanimatie
 const TILE_COLORS = ['#ff8fc0', '#ffd84a', '#7cc8f5', '#7fe0b2', '#c4a2ff', '#ffa05c'];
 function tile(src) {
@@ -639,15 +646,33 @@ function tile(src) {
 
 // laden in volgorde: een tegel haalt zijn beeld pas op als hij bijna in beeld is, zodat wat je ziet als eerste binnenkomt
 // (ook op een trage verbinding); video's spelen alleen in beeld en Ken Burns staat stil buiten beeld, zodat de pagina licht blijft
+const media = { max: 2, light: false }, nearVids = new Set();
+const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const near = new IntersectionObserver(es => {
   for (const e of es) {
     const d = e.target, m = d.firstElementChild, on = e.isIntersecting;
     d.classList.toggle('near', on);
     if (!m) continue;
+    if (m.tagName === 'VIDEO') { if (on) nearVids.add(m); else { nearVids.delete(m); sleepVideo(m); } continue; }
     if (on && m.dataset.src) { m.src = m.dataset.src; delete m.dataset.src; }
-    if (m.tagName === 'VIDEO') { if (on && m.paused) { m.muted = true; m.play().catch(() => {}); } else if (!on && !m.paused) m.pause(); }
   }
+  pickVideos();
 }, { rootMargin: '20%' });
+// een video buiten beeld geeft zijn geheugen terug: de bron eraf, het stilstaande beeld blijft staan
+function sleepVideo(v) { v.pause(); if (v.getAttribute('src')) { v.dataset.src = v.getAttribute('src'); v.removeAttribute('src'); v.load(); } }
+// hooguit twee video's tegelijk (op een trage computer één): die het dichtst bij het midden spelen, de rest toont zijn stilstaande beeld
+function pickVideos() {
+  const cx = innerWidth / 2, cy = innerHeight / 2;
+  const dist = v => { const r = v.getBoundingClientRect(); return Math.hypot(r.left + r.width / 2 - cx, r.top + r.height / 2 - cy); };
+  for (const v of nearVids) if (!v.isConnected) nearVids.delete(v);
+  const on = document.hidden || reduceMotion ? [] : [...nearVids].sort((a, b) => dist(a) - dist(b)).slice(0, media.light ? 1 : media.max);
+  for (const v of nearVids) {
+    if (!on.includes(v)) { if (!v.paused) v.pause(); continue; }
+    if (v.dataset.src) { v.src = v.dataset.src; delete v.dataset.src; }
+    if (v.paused) { v.muted = true; v.play().catch(() => {}); }
+  }
+}
+setInterval(() => { if (!document.hidden) pickVideos(); }, 1000);
 const unobserve = el => el.querySelectorAll('.tile').forEach(t => near.unobserve(t));
 
 const cycles = new Map();
@@ -726,7 +751,7 @@ function layout(dt, hitLane) {
     const key = state.horiz ? `left:${A}px;top:${ps}px;width:${span}px;height:${size}px` : `left:${ps}px;top:${A}px;width:${size}px;height:${span}px`;
     if (key !== L.key) { L.lane.style.cssText = key; L.key = key; }
     if (!L.len) continue;
-    const need = Math.ceil(span / L.len) + 2;
+    const need = Math.ceil(span / L.len) + 1;   // genoeg om de baan te vullen, niet meer (scheelt geheugen)
     while (L.copies < need) {
       const c2 = L.set.cloneNode(true); c2.setAttribute('aria-hidden', 'true');
       c2.querySelectorAll('.tile').forEach(t => { t.classList.remove('near'); near.observe(t); });
@@ -910,8 +935,17 @@ addEventListener('keydown', e => { if (e.key === 'Escape' && pickCard) closePick
 const PICK = { on: false };   // standaard uit; staat het uit in het paneel, dan is het ook uit op de live-site
 
 let last = performance.now(); var slow = 1;
+// trage computer: haalt de wand een paar seconden lang geen ~40 beelden per seconde, dan een lichte stand (geen Ken Burns, één video)
+const perf = { t0: performance.now(), ema: 1 / 60, slowFor: 0 };
+function watchSpeed(dt, now) {
+  if (media.light || now - perf.t0 < 8000 || document.hidden) return;
+  perf.ema += (dt - perf.ema) * 0.05;
+  perf.slowFor = perf.ema > 1 / 40 ? perf.slowFor + dt : 0;
+  if (perf.slowFor > 3) { media.light = true; wall.classList.add('kb-off'); pickVideos(); }
+}
 function frame(now) {
   const dt = Math.min(0.05, (now - last) / 1000); last = now;
+  watchSpeed(dt, now);
 
   // op mobiel tillen de beelden standaard niet op tijdens het vegen (aan te zetten in het paneel)
   const lens = ptr.active && (!ptr.touch || state.touchLift);
@@ -1337,7 +1371,7 @@ async function swapLetter() {
 function startLetters() {
   if (reduce || letterState.mode === 'off' || letterTimer || infoOpen) return;
   swapLetter();
-  letterTimer = setInterval(() => { if (busyCells.size < 4) swapLetter(); }, 1000 / letterState.rate);
+  letterTimer = setInterval(() => { if (busyCells.size < 4 && !document.hidden) swapLetter(); }, 1000 / letterState.rate);
 }
 function stopLetters() { clearInterval(letterTimer); letterTimer = 0; }
 $('logoBtn').addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') startLetters(); });
@@ -1383,7 +1417,7 @@ $('logoBtn').addEventListener('pointerleave', () => { overGlyph = null; });
 // vanzelf: om de 4,5 tot 7 seconden kantelt een willekeurige letter, een kwart seconde later nog één
 function autoRoll() {
   setTimeout(() => {
-    if (letterState.roll && rollReady && !reduce && !infoOpen) {
+    if (letterState.roll && rollReady && !reduce && !infoOpen && !document.hidden) {
       const a = pick(TARGETS), b = pick(TARGETS.filter(c => c !== a));
       rollGlyph(a, 0);
       setTimeout(() => rollGlyph(b, 0), 100);
@@ -1683,6 +1717,31 @@ $('casesNext').addEventListener('click', () => stepCase(1));
 $('casesPrev').addEventListener('click', () => stepCase(-1));
 addEventListener('resize', layoutCube);
 layoutCube();
+// laadbalkje in het logoblok: alleen als het laden even duurt (op een snelle verbinding zie je het niet),
+// het telt de beelden die nu in beeld staan en verdwijnt zodra die er allemaal zijn
+(() => {
+  const bar = document.createElement('span'); bar.className = 'loadbar'; bar.setAttribute('aria-hidden', 'true');
+  const fill = document.createElement('i'); bar.append(fill); $('logoBtn').append(bar);
+  const t0 = performance.now();
+  const tick = () => {
+    const vw = innerWidth, vh = innerHeight;
+    const imgs = tiles.filter(t => { const r = t.getBoundingClientRect(); return r.right > 0 && r.left < vw && r.bottom > 0 && r.top < vh; })
+      .map(t => t.querySelector('img')).filter(Boolean);
+    const f = imgs.length >= 8 ? imgs.filter(im => im.complete && im.naturalWidth).length / imgs.length : 0;
+    const t = performance.now() - t0;
+    if (f < 1 && t > 1500 && !document.hidden) bar.classList.add('on');
+    fill.style.transform = `scaleX(${Math.max(.03, f).toFixed(3)})`;
+    if (f >= 1 || t > 40000) { bar.classList.add('done'); setTimeout(() => bar.remove(), 1600); return; }
+    setTimeout(tick, 200);
+  };
+  tick();
+})();
+// tabblad op de achtergrond of venster geminimaliseerd: video's en animaties staan stil, zodat de site niets kost als je niet kijkt
+document.addEventListener('visibilitychange', () => {
+  root.classList.toggle('asleep', document.hidden);
+  if (document.hidden) { nearVids.forEach(v => v.pause()); caseEls.forEach(f => { const v = f.querySelector('video'); if (v) v.pause(); }); }
+  else { last = performance.now(); pickVideos(); if (openPanel === casesEl) playCase(); }
+});
 </script>
 <div class="ver" id="ver" aria-hidden="true">1.6</div>
 <style>
