@@ -2,6 +2,7 @@
 
 usage: python3 tools/make_live.py <artifact index.html> [--bump]
   --bump  raises VERSION by 0.1 first (do this on every "zet live")
+Copy the artifact's img/ and vid/ files in first: this script then makes them lighter (tools/optimize_media.py).
 """
 import sys, pathlib
 root = pathlib.Path(__file__).resolve().parent.parent
@@ -16,7 +17,12 @@ if '--bump' in sys.argv:
 s = src
 old = '<!doctype html><html><head><meta charset=utf8>'
 assert s.startswith(old)
-s = s.replace(old, '<!doctype html><html lang="en"><head><meta charset=utf8><title>Rudo Menge · Design &amp; Art Direction</title><meta name="description" content="Rudo Menge, graphic designer and art director in Groningen. Posters, identities, books and exhibitions.">', 1)
+s = s.replace(old, '<!doctype html><html lang="en"><head><meta charset=utf8><title>Rudo Menge · Design &amp; Art Direction</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><meta name="description" content="Rudo Menge, graphic designer and art director in Groningen. Posters, identities, books and exhibitions.">', 1)
+# faster loading (2026-10-29): the artifact must load tiles only near the screen and Cases only when opened
+assert 'new IntersectionObserver' in s and 'function loadCases()' in s, 'artifact lacks the lazy loading: port it from the live index.html first'
+# lanes use the lane-sized copies in img/t/ (made by optimize_media.py below)
+x = "'img/s/' + s.id + '.jpg');"
+assert s.count(x) == 1; s = s.replace(x, "'img/t/' + s.id + '.jpg');", 1)
 for x in ['<title>Website Menge.nl</title>\n', '<meta name="claude:viewport-fit-sides" content="cover">\n']:
     assert x in s; s = s.replace(x, '', 1)
 x = '<button class="testbtn" id="testbtn" aria-expanded'
@@ -55,4 +61,6 @@ body:has(#info:not([hidden])) .ver, body:has(#cases:not([hidden])) .ver {{ displ
 </body></html>
 '''
 (root / 'index.html').write_text(s)
+# lighter images and videos (skips files that were done before)
+import subprocess; subprocess.run([sys.executable, str(root / 'tools' / 'optimize_media.py')], check=True)
 print('version', v)

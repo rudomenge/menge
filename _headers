@@ -1,0 +1,5 @@
+# returning visitors: images and videos come from the browser cache instead of being checked again one by one
+/img/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=2592000
+/vid/*
+  Cache-Control: public, max-age=86400, stale-while-revalidate=2592000

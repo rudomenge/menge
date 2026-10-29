@@ -1,4 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset=utf8><title>Rudo Menge · Design &amp; Art Direction</title><meta name="description" content="Rudo Menge, graphic designer and art director in Groningen. Posters, identities, books and exhibitions."><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html lang="en"><head><meta charset=utf8><title>Rudo Menge · Design &amp; Art Direction</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><meta name="description" content="Rudo Menge, graphic designer and art director in Groningen. Posters, identities, books and exhibitions."><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="icon" href="img/icon/favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="img/icon/favicon-32.png"><link rel="icon" type="image/png" sizes="192x192" href="img/icon/icon-192.png"><link rel="apple-touch-icon" href="img/icon/apple-touch-icon.png"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <style>
 /* Bewust één wit thema, ook bij donkere modus op de telefoon. */
@@ -40,7 +40,7 @@ body { background: var(--bg); color: var(--ink); font-family: var(--ui); overflo
 .tile img.pending { opacity: 0; }
 .tile img, .tile video { display: block; width: 100%; height: 100%; object-fit: cover; pointer-events: none; -webkit-user-drag: none; }
 /* Ken Burns: situatiefoto's zoomen langzaam in of uit, elk met een eigen tempo en richting */
-.tile.kb img { animation: kb var(--kb-d, 20s) ease-in-out var(--kb-delay, 0s) infinite alternate; transform-origin: var(--kb-o, 50% 50%); will-change: transform; }
+.tile.kb.near img { animation: kb var(--kb-d, 20s) ease-in-out var(--kb-delay, 0s) infinite alternate; transform-origin: var(--kb-o, 50% 50%); will-change: transform; }
 .wall.kb-off .tile.kb img { animation: none; }
 @keyframes kb { from { transform: scale(var(--kb-a, 1)); } to { transform: scale(var(--kb-b, 1.12)); } }
 @media (prefers-reduced-motion: reduce) { .tile.kb img { animation: none; } }
@@ -546,7 +546,7 @@ body { background: var(--bg); color: var(--ink); font-family: var(--ui); overflo
 // Slideshow-selectie uit de beeldenkeuze (ja + misschien). Elke keer laden geeft een nieuwe willekeurige volgorde.
 // Bronpaden en keuzes staan in slides.json; de vorige 44 beelden (img/*-s.jpg) blijven als reserve gepubliceerd.
 const SLIDES = [{"id":"gm-newson-detail-letters","r":1.3333,"c":"foto"},{"id":"menge-boeken-site-3d-v2-jk-2","r":1.0,"c":"boek"},{"id":"nno-season-2012","r":0.707,"c":"poster"},{"id":"ag-ploeg-08a","r":1.5015,"c":"foto"},{"id":"gm-2019-roosegaarde-poster","r":0.677,"c":"poster"},{"id":"gm-book-alias-spread-01-1340","r":0.719,"c":"boek"},{"id":"f-hohemesse","r":0.719,"c":"poster"},{"id":"mendini-thumb","r":0.696,"c":"boek"},{"id":"menge-boeken-site-3d-v2-jk-4","r":1.0,"c":"boek"},{"id":"gm-2021-rodin-book-insert-3000x2120","r":0.762,"c":"boek"},{"id":"img-1638","r":1.0,"c":"boek"},{"id":"img-1629","r":1.0,"c":"boek"},{"id":"book-tc","r":0.873,"c":"boek"},{"id":"graffiti-3000x2000-px","r":0.666,"c":"poster"},{"id":"f-01-eo-silver-book","r":0.719,"c":"boek"},{"id":"fat-vrouw-a0-def-2x3","r":0.666,"c":"poster"},{"id":"gm-2021-unzipped-a0","r":0.653,"c":"poster"},{"id":"gm-mag-jr-2","r":0.782,"c":"blad"},{"id":"ag-ploeg-11p","r":1.5015,"c":"foto"},{"id":"mq-omslag-013","r":0.889,"c":"boek"},{"id":"gm-brood-poster","r":0.669,"c":"poster"},{"id":"gm-jr-poster","r":0.668,"c":"poster"},{"id":"abri-nacht","r":0.794,"c":"foto"},{"id":"gm-2022-kleur-3000x2000","r":0.666,"c":"poster"},{"id":"bron-gm-teacoffee-allesandro","r":1.6155,"c":"boek"},{"id":"2022-gianni-versace-poster","r":0.706,"c":"poster"},{"id":"werkman-combi","r":1.6807,"c":"foto"},{"id":"gm-rodin-poster","r":0.719,"c":"poster"},{"id":"gm-mag-wilden-cover","r":0.719,"c":"blad"},{"id":"gm-2021-poster-nnt-fellini-3000x2000","r":0.666,"c":"poster"},{"id":"abri-1","r":0.811,"c":"foto"},{"id":"alaia-poster-v003","r":0.63,"c":"poster"},{"id":"gm-2021-book-erwin-3000x2000","r":0.729,"c":"boek"},{"id":"gm-poste-la-chapelle","r":0.706,"c":"poster"},{"id":"gm-gochina-b","r":0.707,"c":"poster"},{"id":"nnt-posters","r":0.666,"c":"poster"},{"id":"gm-folker-poster","r":0.707,"c":"poster"},{"id":"gm-rodin-thinker-poster","r":0.719,"c":"poster"},{"id":"f-a-poster-nno-2013","r":0.719,"c":"poster"},{"id":"rm-beme8983-hdr-mail","r":2.0,"c":"foto"},{"id":"mng-various-qee-gm","r":1.2315,"c":"object"},{"id":"spreads-optical-01-1340","r":0.632,"c":"boek"},{"id":"gm-bowie-thank-you-adv-def","r":0.666,"c":"poster"},{"id":"gm-mag-bowie2-2","r":0.782,"c":"blad"},{"id":"gm-a3-poster","r":0.631,"c":"poster"},{"id":"gm-2021-boek-iris-3000x2000","r":0.82,"c":"boek"},{"id":"gm-empel-poster-010","r":0.666,"c":"poster"},{"id":"gm-onbekende-rusland","r":0.707,"c":"poster"},{"id":"nnt-magazine-hamlet","r":0.707,"c":"blad"},{"id":"gm-2019-chihuly-poster","r":0.706,"c":"poster"},{"id":"gm-gochina-buitenmuur","r":1.3333,"c":"foto"},{"id":"gm-gochina-c","r":0.707,"c":"poster"},{"id":"menge-boeken-mendini-current-view","r":0.79,"c":"boek"},{"id":"job-840-book","r":0.706,"c":"boek"},{"id":"gm-mariko-mori-poster","r":0.707,"c":"poster"},{"id":"book-iris-bron","r":0.808,"c":"boek"},{"id":"newson-uitn","r":1.2225,"c":"object"},{"id":"gm-de-collectie-maart-2014","r":0.658,"c":"blad"},{"id":"jr-rudo","r":1.7778,"v":1,"c":"video"},{"id":"gm-poster-quinn-moss","r":0.675,"c":"poster"},{"id":"gm-2021-mag-jr","r":0.724,"c":"blad"},{"id":"gm-waterhouse-posters","r":0.707,"c":"poster"},{"id":"gm-2021-poster-newson-3000x2000","r":0.666,"c":"poster"},{"id":"gromm-omslag","r":0.666,"c":"boek"},{"id":"affiche-a0-def-converted","r":0.666,"c":"poster"},{"id":"gm-gochina-a","r":0.707,"c":"poster"},{"id":"book-rus-orient","r":0.627,"c":"boek"},{"id":"gm-2021-poster-laarman-3000x2000","r":0.654,"c":"poster"},{"id":"gm-chalayan-poster","r":0.683,"c":"poster"},{"id":"cycloon-ruw","r":1.5015,"c":"object"},{"id":"gm-abri-wk32","r":1.0,"c":"foto"},{"id":"gm-840-teacoffee","r":0.706,"c":"boek"},{"id":"f-b-poster-nno-2013","r":0.719,"c":"poster"},{"id":"ag-ploeg-11j","r":1.4749,"c":"foto"},{"id":"gm-lamsweerde-2x3","r":0.666,"c":"poster"},{"id":"job-a2-alter-ego-v02","r":0.691,"c":"poster"},{"id":"f-c-poster-nno-2013","r":0.719,"c":"poster"},{"id":"a0-affiche-repin-def02-converted","r":0.666,"c":"poster"},{"id":"menge-boeken-site-mag-current-view","r":0.732,"c":"blad"},{"id":"gm-book-alaia-10","r":1.5267,"c":"boek"},{"id":"mng-book-diaghilev","r":1.2315,"c":"boek"},{"id":"gm-onthemove-wk36","r":1.0,"c":"foto"},{"id":"gm-divers-showreel-v2","r":1.7778,"v":1,"c":"video"},{"id":"gm-divers-showreel","r":1.7778,"v":1,"c":"video"},{"id":"joram-krol-showreel","r":1.7778,"v":1,"c":"video"},{"id":"showreel-slow","r":1.7778,"v":1,"c":"video"},{"id":"tattoo-showreel","r":1.7778,"v":1,"c":"video"},{"id":"trump-serrano-showreel","r":1.7778,"v":1,"c":"video"},{"id":"gm-2021-erwin-olaf-silver-3000x2120","r":0.706,"c":"poster"},{"id":"menge-instagram-01-07","r":0.824,"c":"boek"}];
-const BASE = SLIDES.map(s => s.v ? 'vid/' + s.id + '.mp4' : 'img/s/' + s.id + '.jpg');
+const BASE = SLIDES.map(s => s.v ? 'vid/' + s.id + '.mp4' : 'img/t/' + s.id + '.jpg');
 // breedte / hoogte per beeld
 const RATIO = {};
 SLIDES.forEach((s, i) => RATIO[BASE[i]] = s.r);
@@ -620,10 +620,10 @@ function tile(src) {
     // bewegend beeld: stil, in een lus, met een stilstaand beeld tot de video speelt
     const v = document.createElement('video');
     for (const a of ['muted', 'loop', 'playsinline']) v.setAttribute(a, '');
-    v.muted = true; v.preload = 'auto'; v.poster = src.replace('.mp4', '.jpg'); v.src = src;
-    d.append(v); return d;
+    v.muted = true; v.preload = 'none'; v.poster = src.replace('.mp4', '.jpg'); v.dataset.src = src;
+    d.append(v); near.observe(d); return d;
   }
-  const img = new Image(); img.className = 'pending'; img.src = src; img.alt = ''; img.decoding = 'async'; img.draggable = false;
+  const img = new Image(); img.className = 'pending'; img.dataset.src = src; img.alt = ''; img.decoding = 'async'; img.draggable = false;
   img.onload = () => img.classList.remove('pending');
   if (img.complete && img.naturalWidth) img.classList.remove('pending');
   if (KIND[src] === 'foto') {
@@ -635,18 +635,21 @@ function tile(src) {
     d.style.setProperty('--kb-delay', (-Math.random() * 20).toFixed(1) + 's');
     d.style.setProperty('--kb-o', `${Math.round(20 + Math.random() * 60)}% ${Math.round(20 + Math.random() * 60)}%`);
   }
-  d.append(img); return d;
+  d.append(img); near.observe(d); return d;
 }
 
-// video's spelen alleen als ze in beeld zijn, zodat de pagina licht blijft
-setInterval(() => {
-  for (const v of document.querySelectorAll('.tile video')) {
-    const r = v.getBoundingClientRect();
-    const seen = r.right > 0 && r.left < innerWidth && r.bottom > 0 && r.top < innerHeight;
-    if (seen && v.paused) { v.muted = true; v.play().catch(() => {}); }
-    else if (!seen && !v.paused) v.pause();
+// laden in volgorde: een tegel haalt zijn beeld pas op als hij bijna in beeld is, zodat wat je ziet als eerste binnenkomt
+// (ook op een trage verbinding); video's spelen alleen in beeld en Ken Burns staat stil buiten beeld, zodat de pagina licht blijft
+const near = new IntersectionObserver(es => {
+  for (const e of es) {
+    const d = e.target, m = d.firstElementChild, on = e.isIntersecting;
+    d.classList.toggle('near', on);
+    if (!m) continue;
+    if (on && m.dataset.src) { m.src = m.dataset.src; delete m.dataset.src; }
+    if (m.tagName === 'VIDEO') { if (on && m.paused) { m.muted = true; m.play().catch(() => {}); } else if (!on && !m.paused) m.pause(); }
   }
-}, 400);
+}, { rootMargin: '20%' });
+const unobserve = el => el.querySelectorAll('.tile').forEach(t => near.unobserve(t));
 
 const cycles = new Map();
 function cycleOrder(q) {
@@ -662,7 +665,7 @@ function cycleOrder(q) {
 }
 
 function clearLanes() {
-  lanes.forEach(L => { L.ro.disconnect(); L.lane.remove(); });
+  lanes.forEach(L => { L.ro.disconnect(); unobserve(L.lane); L.lane.remove(); });
   lanes.clear(); tilesDirty = true;
 }
 
@@ -714,7 +717,7 @@ function layout(dt, hitLane) {
   const P = pitch(), size = laneSize(), c = colCount();
   const base = (c % 2 ? -P / 2 : 0) + gapPx / 2;   // eerste scherm precies gevuld bij 0° en 100%
   const kMin = Math.floor((pMin - base) / P) - 1, kMax = Math.floor((pMax - base) / P) + 1;
-  for (const [k, L] of lanes) if (k < kMin || k > kMax) { L.ro.disconnect(); L.lane.remove(); lanes.delete(k); tilesDirty = true; }
+  for (const [k, L] of lanes) if (k < kMin || k > kMax) { L.ro.disconnect(); unobserve(L.lane); L.lane.remove(); lanes.delete(k); tilesDirty = true; }
   for (let k = kMin; k <= kMax; k++) if (!lanes.has(k)) makeLane(k);
 
   const A = Math.floor(aMin / 400) * 400 - P;      // begin van de baan (afgerond, zodat de stijl niet elk frame verandert)
@@ -727,6 +730,7 @@ function layout(dt, hitLane) {
     const need = Math.ceil(span / L.len) + 2;
     while (L.copies < need) {
       const c2 = L.set.cloneNode(true); c2.setAttribute('aria-hidden', 'true');
+      c2.querySelectorAll('.tile').forEach(t => { t.classList.remove('near'); near.observe(t); });
       L.track.append(c2); L.copies++; tilesDirty = true;
     }
     const stop = state.hoverStop && hitLane === L.lane;
@@ -848,7 +852,7 @@ function caption(src) {
 const boxOf = (l, t, w, h, tr, op) => ({ left: l + 'px', top: t + 'px', width: w + 'px', height: h + 'px', transform: tr, opacity: op });
 function openPick(t) {
   const img = t.querySelector('img'), vid = t.querySelector('video');
-  const src = img ? img.getAttribute('src') : vid.getAttribute('poster');
+  const src = (img ? img.getAttribute('src') || img.dataset.src : vid.getAttribute('poster')).replace('img/t/', 'img/s/');
   const r = t.getBoundingClientRect();
   if (!r.width) return;
   const ar = t.offsetWidth / t.offsetHeight, s = state.scale * pinch.zoom;
@@ -1120,6 +1124,7 @@ async function openInfo(which) {
   if (busy || infoOpen) return;
   busy = true; infoOpen = true;
   const panel = which === 'cases' ? casesEl : info; openPanel = panel;
+  if (which === 'cases') loadCases();
   const g = infoGeom(), { r, W, H, R } = g;
   const tickerOn = logoEl.classList.contains('ticker-on');
   for (const img of [fxTop.firstElementChild, fxBot.firstElementChild]) {
@@ -1512,8 +1517,8 @@ const caseEls = CASES.map(c => {
   const xl = c.wideXl && matchMedia('(min-width: 761px)').matches;
   const f = document.createElement('figure'), src = c.v ? 'vid/' + c.id + '.mp4' : xl ? c.wideXl : c.wide || c.img || 'img/s/' + c.id + '.jpg';   // img: volledige poster met eigen marge
   let m;
-  if (c.v) m = Object.assign(document.createElement('video'), { muted: true, loop: true, playsInline: true, preload: 'auto', poster: 'vid/' + c.id + '.jpg', src });
-  else { m = new Image(); m.alt = ''; if (!c.bg && !c.wide) m.addEventListener('load', () => tint(f, m)); if (xl) m.onerror = () => { m.src = c.wide; }; m.src = src; }
+  if (c.v) { m = Object.assign(document.createElement('video'), { muted: true, loop: true, playsInline: true, preload: 'none' }); m.dataset.src = src; m.dataset.poster = 'vid/' + c.id + '.jpg'; }
+  else { m = new Image(); m.alt = ''; if (!c.bg && !c.wide) m.addEventListener('load', () => tint(f, m)); if (xl) m.onerror = () => { m.src = c.wide; }; m.dataset.src = src; }
   const cap = capEl(c.cap || caption(c.wide ? 'img/s/' + c.id + '.jpg' : src));
   f.className = c.wide ? 'case case-wide' : (c.v || c.bg) ? 'case' : 'case case-poster';
   m.style.setProperty('--bz', c.zoom || 1);
@@ -1528,12 +1533,24 @@ const caseEls = CASES.map(c => {
   if (c.bg) { const bgd = document.createElement('div'); bgd.className = 'case-bg'; bgd.style.backgroundImage = `url("${src}")`; f.append(bgd); }
   // staand scherm (mobiel): een hoge versie met ruime marge rondom het boek
   let el = m;
-  if (c.tall) { el = document.createElement('picture'); const so = document.createElement('source'); so.media = '(max-aspect-ratio: 1/1)'; so.srcset = c.tall; el.append(so, m); }
+  if (c.tall) { el = document.createElement('picture'); const so = document.createElement('source'); so.media = '(max-aspect-ratio: 1/1)'; so.dataset.srcset = c.tall; el.append(so, m); }
   f.append(el, cap); cube.append(f);
   return f;
 });
 // de kaarten liggen op één stapel: de bovenste is het huidige project, de volgende ligt er net onder
 const idxOf = n => ((n % CASES.length) + CASES.length) % CASES.length;
+// de beelden van Cases komen pas als Cases opengaat (of als de voorpagina klaar is en de lijn stil), niet tegelijk met de voorpagina
+let casesLoaded = false;
+function loadCases() {
+  if (casesLoaded) return; casesLoaded = true;
+  caseEls.forEach(f => {
+    const m = f._m, so = f.querySelector('source');
+    if (so && so.dataset.srcset) so.srcset = so.dataset.srcset;
+    if (m.dataset.poster) m.poster = m.dataset.poster;
+    if (m.dataset.src) { m.src = m.dataset.src; delete m.dataset.src; }
+  });
+}
+addEventListener('load', () => setTimeout(() => (window.requestIdleCallback || setTimeout)(loadCases), 8000));
 function layoutCube() {
   const W = innerWidth, H = innerHeight;
   caseEls.forEach(f => Object.assign(f.style, { width: W + 'px', height: H + 'px' }));
