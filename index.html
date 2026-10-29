@@ -1,5 +1,4 @@
-<!doctype html><html lang="en"><head><meta charset=utf8><title>Rudo Menge · Design &amp; Art Direction</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><meta name="description" content="Rudo Menge, graphic designer and art director in Groningen. Posters, identities, books and exhibitions."><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="icon" href="img/icon/favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="img/icon/favicon-32.png"><link rel="icon" type="image/png" sizes="192x192" href="img/icon/icon-192.png"><link rel="apple-touch-icon" href="img/icon/apple-touch-icon.png"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html><html lang="en"><head><meta charset=utf8><title>Rudo Menge · Design &amp; Art Direction</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><meta name="description" content="Rudo Menge, graphic designer and art director in Groningen. Posters, identities, books and exhibitions."><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><link rel="icon" href="img/icon/favicon.ico" sizes="any"><link rel="icon" type="image/png" sizes="32x32" href="img/icon/favicon-32.png"><link rel="icon" type="image/png" sizes="192x192" href="img/icon/icon-192.png"><link rel="apple-touch-icon" href="img/icon/apple-touch-icon.png"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <style>
 /* Bewust één wit thema, ook bij donkere modus op de telefoon. */
 /* Layout: een wand van horizontale banen, afwisselend naar links en rechts, eindeloos (verticaal kan ook via het paneel). Kantelen en vergroten. Geen tekst. */
@@ -1685,7 +1684,7 @@ $('casesPrev').addEventListener('click', () => stepCase(-1));
 addEventListener('resize', layoutCube);
 layoutCube();
 </script>
-<div class="ver" id="ver" aria-hidden="true">1.5</div>
+<div class="ver" id="ver" aria-hidden="true">1.6</div>
 <style>
 .ver { position: fixed; z-index: 45; left: calc(10px + env(safe-area-inset-left, 0px)); top: calc(8px + env(safe-area-inset-top, 0px));
   font: 400 10px/1 "Inter", ui-sans-serif, system-ui, sans-serif; letter-spacing: .04em; font-variant-numeric: tabular-nums;
@@ -1695,7 +1694,7 @@ body:has(#info:not([hidden])) .ver, body:has(#cases:not([hidden])) .ver { displa
 </style>
 <script>
 (() => {
-  const el = document.getElementById('ver'), V = '1.5';
+  const el = document.getElementById('ver'), V = '1.6';
   let seen = false; try { seen = localStorage.getItem('mv') === '1'; } catch (e) {}
   fetch('/api/count', { method: seen ? 'GET' : 'POST' }).then(r => r.json()).then(d => {
     if (typeof d.n !== 'number') return;
