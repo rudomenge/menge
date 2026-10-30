@@ -34,6 +34,14 @@ if 'id="casesTweak"' in s:
     x = 'casesTweak.hidden = false;'
     assert s.count(x) == 1
     s = s.replace(x, "if (new URLSearchParams(location.search).has('test')) casesTweak.hidden = false;", 1)
+# the page comes wrapped in the artifact skeleton: keep one <head>, move the favicons into it
+import re
+m = re.search(r'</head><body>\n(<!doctype html><html><head>.*?</head><body>)\n', s)
+if m:
+    icons = ''.join(re.findall(r'<link rel="(?:icon|apple-touch-icon)"[^>]*>', m.group(1)))
+    s = s[:m.start(1)] + s[m.end(1) + 1:]
+    x = '<style>:root{color-scheme'
+    s = s.replace(x, icons + x, 1)
 s = s.rstrip()
 while s.endswith('</body></html>'): s = s[:-len('</body></html>')].rstrip()
 
