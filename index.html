@@ -990,8 +990,6 @@ function frame(now) {
 
 // Testpaneel
 const btn = $('testbtn'), panel = $('panel');
-// live site: test button only with ?test in the address (menge.nl/?test)
-if (new URLSearchParams(location.search).has('test')) btn.hidden = false;
 btn.addEventListener('click', () => { panel.hidden = !panel.hidden; btn.setAttribute('aria-expanded', !panel.hidden); });
 function setPlaying(p) { state.playing = p; $('play').textContent = p ? 'Pauze' : 'Afspelen'; }
 $('play').addEventListener('click', () => setPlaying(!state.playing));
@@ -1185,7 +1183,7 @@ async function openInfo(which) {
     info.style.setProperty('--info-pt', (infoState.keep ? sMax - r.top + 40 : 88) + 'px');
     info.style.setProperty('--info-pb', (infoState.keep ? r.bottom - sMin + 40 : 64) + 'px');
     info.querySelector('.info-scroll').scrollTop = 0;
-  } else { caseN = 0; resetCases(0); if (new URLSearchParams(location.search).has('test')) casesTweak.hidden = false; closeBtn.classList.add('thin'); showCasesHint(); }   // cases beginnen altijd bij het eerste project
+  } else { caseN = 0; resetCases(0);  closeBtn.classList.add('thin'); showCasesHint(); }   // cases beginnen altijd bij het eerste project
   panel.hidden = false;
   panel.classList.add('on');   // direct de infokleur zodra het splitsen begint, geen foto's meer zichtbaar
   // stap 2: het zwarte logo gaat naar boven en naar beneden, maar de randen zijn rond, als een ellips die het hele scherm vult
@@ -1743,7 +1741,7 @@ document.addEventListener('visibilitychange', () => {
   else { last = performance.now(); pickVideos(); if (openPanel === casesEl) playCase(); }
 });
 </script>
-<div class="ver" id="ver" aria-hidden="true">1.7</div>
+<div class="ver" id="ver" aria-hidden="true">1.8</div>
 <style>
 .ver { position: fixed; z-index: 45; left: calc(10px + env(safe-area-inset-left, 0px)); top: calc(8px + env(safe-area-inset-top, 0px));
   font: 400 10px/1 "Inter", ui-sans-serif, system-ui, sans-serif; letter-spacing: .04em; font-variant-numeric: tabular-nums;
@@ -1753,7 +1751,7 @@ body:has(#info:not([hidden])) .ver, body:has(#cases:not([hidden])) .ver { displa
 </style>
 <script>
 (() => {
-  const el = document.getElementById('ver'), V = '1.7';
+  const el = document.getElementById('ver'), V = '1.8';
   let seen = false; try { seen = localStorage.getItem('mv') === '1'; } catch (e) {}
   fetch('/api/count', { method: seen ? 'GET' : 'POST' }).then(r => r.json()).then(d => {
     if (typeof d.n !== 'number') return;

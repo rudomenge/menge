@@ -27,13 +27,12 @@ for x in ['<title>Website Menge.nl</title>\n', '<meta name="claude:viewport-fit-
     assert x in s; s = s.replace(x, '', 1)
 x = '<button class="testbtn" id="testbtn" aria-expanded'
 assert x in s; s = s.replace(x, '<button class="testbtn" id="testbtn" hidden aria-expanded', 1)
-x = "const btn = $('testbtn'), panel = $('panel');\n"
-assert x in s; s = s.replace(x, x + "// live site: test button only with ?test in the address (menge.nl/?test)\nif (new URLSearchParams(location.search).has('test')) btn.hidden = false;\n", 1)
-# Cases tweak button (since artifact v95): also only with ?test
+# no test panels on the live site at all (Menge, 2026-11-05): the test button and the Cases tweak
+# button stay hidden for good, there is no ?test switch; testing happens in the artifact only
 if 'id="casesTweak"' in s:
     x = 'casesTweak.hidden = false;'
     assert s.count(x) == 1
-    s = s.replace(x, "if (new URLSearchParams(location.search).has('test')) casesTweak.hidden = false;", 1)
+    s = s.replace(x, '', 1)
 # the page comes wrapped in the artifact skeleton: keep one <head>, move the favicons into it
 import re
 m = re.search(r'</head><body>\n(<!doctype html><html><head>.*?</head><body>)\n', s)
