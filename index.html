@@ -3314,11 +3314,16 @@ body:has(#info:not([hidden])) .ver, body:has(#cases:not([hidden])) .ver { displa
 <script>
 (() => {
   const el = document.getElementById('ver'), V = '2.1';
-  let seen = false; try { seen = localStorage.getItem('mv') === '1'; } catch (e) {}
-  fetch('/api/count', { method: seen ? 'GET' : 'POST' }).then(r => r.json()).then(d => {
+  // every visit counts once; the browser remembers which day/week/month it was last counted (no cookies)
+  const ls = k => { try { return localStorage.getItem(k); } catch (e) { return null; } };
+  const p = {}; try { for (const x of new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Amsterdam', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(new Date())) p[x.type] = x.value; } catch (e) {}
+  const t = new Date(Date.UTC(+p.year, +p.month - 1, +p.day)); t.setUTCDate(t.getUTCDate() - (t.getUTCDay() + 6) % 7 + 3);
+  const K = { day: p.year + '-' + p.month + '-' + p.day, week: t.getUTCFullYear() + '-W' + String(1 + Math.floor((t - Date.UTC(t.getUTCFullYear(), 0, 1)) / 6048e5)).padStart(2, '0'), month: p.year + '-' + p.month };
+  const f = { n: ls('mv') === '1' ? 0 : 1, d: ls('mvd') === K.day ? 0 : 1, w: ls('mvw') === K.week ? 0 : 1, m: ls('mvm') === K.month ? 0 : 1 };
+  fetch('/api/count', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(f) }).then(r => r.json()).then(d => {
     if (typeof d.n !== 'number') return;
     el.textContent = V + ' \u2013 ' + d.n;
-    if (!seen) try { localStorage.setItem('mv', '1'); } catch (e) {}
+    try { localStorage.setItem('mv', '1'); localStorage.setItem('mvd', d.day); localStorage.setItem('mvw', d.week); localStorage.setItem('mvm', d.month); } catch (e) {}
   }).catch(() => {});
 })();
 </script>
