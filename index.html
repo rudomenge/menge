@@ -493,6 +493,28 @@ body { background: var(--bg); color: var(--ink); font-family: var(--ui); overflo
 </style>
 <style>
 /* Neue Haas Grotesk (test): knoppen, menu, info, bijschriften, panelen; het logo blijft beeld */
+@font-face{font-family:"NHG Text";src:url(fonts/nhg-TX-55Rg.woff2) format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"NHG Text";src:url(fonts/nhg-TX-56It.woff2) format("woff2");font-weight:400;font-style:italic;font-display:swap}
+@font-face{font-family:"NHG Text";src:url(fonts/nhg-TX-65Md.woff2) format("woff2");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"NHG Text";src:url(fonts/nhg-TX-66MdIt.woff2) format("woff2");font-weight:500;font-style:italic;font-display:swap}
+@font-face{font-family:"NHG Text";src:url(fonts/nhg-TX-75Bd.woff2) format("woff2");font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:"NHG Text";src:url(fonts/nhg-TX-76BdIt.woff2) format("woff2");font-weight:700;font-style:italic;font-display:swap}
+@font-face{font-family:"NHG Display";src:url(fonts/nhg-DS-15UltTh.woff2) format("woff2");font-weight:100;font-style:normal;font-display:swap}
+@font-face{font-family:"NHG Display";src:url(fonts/nhg-DS-16UltThIt.woff2) format("woff2");font-weight:100;font-style:italic;font-display:swap}
+@font-face{font-family:"NHG Display";src:url(fonts/nhg-DS-25Th.woff2) format("woff2");font-weight:200;font-style:normal;font-display:swap}
+@font-face{font-family:"NHG Display";src:url(fonts/nhg-DS-26ThIt.woff2) format("woff2");font-weight:200;font-style:italic;font-display:swap}
+@font-face{font-family:"NHG Display";src:url(fonts/nhg-DS-35XLt.woff2) format("woff2");font-weight:250;font-style:normal;font-display:swap}
+@font-face{font-family:"NHG Display";src:url(fonts/nhg-DS-36XLtIt.woff2) format("woff2");font-weight:250;font-style:italic;font-display:swap}
+@font-face{font-family:"NHG Display";src:url(fonts/nhg-DS-45Lt.woff2) format("woff2");font-weight:300;font-style:normal;font-display:swap}
+@font-face{font-family:"NHG Display";src:url(fonts/nhg-DS-46LtIt.woff2) format("woff2");font-weight:300;font-style:italic;font-display:swap}
+@font-face{font-family:"NHG Display";src:url(fonts/nhg-DS-55Rg.woff2) format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"NHG Display";src:url(fonts/nhg-DS-56It.woff2) format("woff2");font-weight:400;font-style:italic;font-display:swap}
+@font-face{font-family:"NHG Display";src:url(fonts/nhg-DS-65Md.woff2) format("woff2");font-weight:500;font-style:normal;font-display:swap}
+@font-face{font-family:"NHG Display";src:url(fonts/nhg-DS-66MdIt.woff2) format("woff2");font-weight:500;font-style:italic;font-display:swap}
+@font-face{font-family:"NHG Display";src:url(fonts/nhg-DS-75Bd.woff2) format("woff2");font-weight:700;font-style:normal;font-display:swap}
+@font-face{font-family:"NHG Display";src:url(fonts/nhg-DS-76BdIt.woff2) format("woff2");font-weight:700;font-style:italic;font-display:swap}
+@font-face{font-family:"NHG Display";src:url(fonts/nhg-DS-95Blk.woff2) format("woff2");font-weight:900;font-style:normal;font-display:swap}
+@font-face{font-family:"NHG Display";src:url(fonts/nhg-DS-96BlkIt.woff2) format("woff2");font-weight:900;font-style:italic;font-display:swap}
 :root.nhg { --ui: "NHG Text", "Neue Haas Grotesk Text", "Helvetica Neue", Helvetica, Arial, sans-serif; }
 :root.nhg .navbtn { font-family: "NHG Display", "Neue Haas Grotesk Display", "Helvetica Neue", Helvetica, Arial, sans-serif !important; font-weight: 700 !important; letter-spacing: -.01em; }
 :root.nhg .info, :root.nhg .info * { font-family: "NHG Text", "Neue Haas Grotesk Text", "Helvetica Neue", Helvetica, Arial, sans-serif !important; }
@@ -584,7 +606,7 @@ body { background: var(--bg); color: var(--ink); font-family: var(--ui); overflo
   </div>
   <label class="check"><input type="checkbox" id="cCap" checked> Bijschriften tonen</label>
   <label class="check"><input type="checkbox" id="cPaper"> Kaartjes van papier (test)</label>
-  <label class="check sk-keep"><input type="checkbox" id="nhgOn"> Neue Haas Grotesk (test)</label>
+  <label class="check sk-keep"><input type="checkbox" id="nhgOn" checked> Neue Haas Grotesk (test)</label>
   <label class="check sk-keep sk-mrow"><input type="checkbox" id="cKaarten" checked> Speelkaarten op mobiel (test)</label>
   <label class="check sk-keep sk-drow"><input type="checkbox" id="skDesk" checked> Speelkaarten op desktop (test)</label>
   <label class="check sk-keep sk-drow"><input type="checkbox" id="abDesk" checked> About-kaarten op desktop (test)</label>
@@ -595,6 +617,18 @@ body { background: var(--bg); color: var(--ink); font-family: var(--ui); overflo
   <div class="row sk-keep sk-donly">
     <label for="skDyD">Kaart hoger of lager (desktop) <output id="skDyDOut">-10 px</output></label>
     <input type="range" id="skDyD" min="-200" max="200" step="1" value="-10">
+  </div>
+  <div class="row sk-keep sk-donly">
+    <label for="potS">Pen formaat (100% = echt) <output id="potSOut">100%</output></label>
+    <input type="range" id="potS" min="40" max="200" step="1" value="100">
+  </div>
+  <div class="row sk-keep sk-donly">
+    <label for="mesS">Zakmes formaat (100% = echt) <output id="mesSOut">100%</output></label>
+    <input type="range" id="mesS" min="40" max="200" step="1" value="100">
+  </div>
+  <div class="row sk-keep sk-donly">
+    <label for="skVig">Vignet achtergrond <output id="skVigOut">35%</output></label>
+    <input type="range" id="skVig" min="0" max="100" step="1" value="35">
   </div>
   <div class="row sk-keep sk-only sk-monly mstr">
     <h3>Swipe away!</h3>
@@ -2315,12 +2349,18 @@ document.addEventListener('visibilitychange', () => {
 #sk:is(.beton, .linnen, .hout)::before { opacity: var(--sk-tex, .5); }
 #sk.linnen::before { background-image: url(img/tex/linnen.jpg); }
 #sk.hout::before { background-image: url(img/tex/hout.jpg); }
-#sk .sk-desk { display: none; position: absolute; inset: 0; pointer-events: none; z-index: 0; }
-#sk .sk-desk img { position: absolute; display: block; height: auto; -webkit-user-drag: none; }
-#sk .sk-desk .d-pot { width: 40vh; left: max(70px, 6vw); top: 15vh; }
-#sk .sk-desk .d-gum { width: 15vh; right: max(110px, 9vw); top: 17vh; }
-#sk .sk-desk .d-mes { width: 25vh; right: max(90px, 7vw); bottom: 20vh; }
-@media (min-width: 761px) { #sk:not(.ab-mode) .sk-desk { display: block; } }
+/* bureau (desktop Work): pen en mes op ware grootte t.o.v. de kaart (kaart = 63 mm breed), deels uit beeld; op te pakken en weg te gooien */
+#sk .sk-desk, #sk .sk-vig { display: none; position: absolute; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+#sk .sk-desk { --mm: calc(var(--sk-sd, .8) * min(100vw, (100dvh - 60px) / 1.5715) / 63); }
+#sk .sk-vig { background: linear-gradient(90deg, rgb(0 0 0 / var(--sk-vig, .35)) 0%, rgb(0 0 0 / calc(var(--sk-vig, .35) * .45)) 14%, transparent 34%, transparent 66%, rgb(0 0 0 / calc(var(--sk-vig, .35) * .45)) 86%, rgb(0 0 0 / var(--sk-vig, .35)) 100%); }
+#sk .sk-desk img { position: absolute; display: block; height: auto; -webkit-user-drag: none; user-select: none; pointer-events: auto; cursor: grab; touch-action: none;
+  translate: var(--dx, 0px) var(--dy, 0px); rotate: var(--dr, 0deg); transition: scale .18s, filter .18s; }
+#sk .sk-desk img.held { cursor: grabbing; scale: 1.025; filter: drop-shadow(8px 14px 14px rgb(0 0 0 / .28)); }
+#sk .sk-desk img.gone { display: none; }
+#sk .sk-desk .d-gum { display: none; }   /* gum voorlopig verborgen */
+#sk .sk-desk .d-pot { width: calc(132 * var(--mm) * var(--pot-s, 1)); left: calc(-32 * var(--mm) * var(--pot-s, 1)); top: calc(-22 * var(--mm) * var(--pot-s, 1)); }
+#sk .sk-desk .d-mes { width: calc(117 * var(--mm) * var(--mes-s, 1)); right: calc(-30 * var(--mm) * var(--mes-s, 1)); bottom: calc(-12 * var(--mm) * var(--mes-s, 1)); }
+@media (min-width: 761px) { #sk:not(.ab-mode) .sk-desk, #sk:not(.ab-mode) .sk-vig { display: block; } }
 #sk .sk-stack { position: absolute; inset: 0; touch-action: none; -webkit-user-select: none; user-select: none; }
 #sk .sk-card { position: absolute; left: 50%; top: calc(50% + var(--sk-dy, 0px)); width: calc(var(--sk-s, .92) * min(100vw, (100dvh - 110px) / 1.5715)); translate: -50% -50%; opacity: 0; will-change: transform; }
 #sk .sk-card.top { z-index: 3; opacity: 1; }
@@ -2357,6 +2397,17 @@ document.addEventListener('visibilitychange', () => {
 #sk .sk-keys button[data-k="-1"] { left: calc(30px + env(safe-area-inset-left, 0px)); } #sk .sk-keys button[data-k="1"] { right: calc(30px + env(safe-area-inset-right, 0px)); }
 #sk .sk-keys button:hover { opacity: .9; } #sk .sk-keys button.down { transform: translateY(1.5px) scale(.94); opacity: 1; }
 #sk .sk-keys svg { width: 100%; height: 100%; display: block; }
+/* op en neer: rechtsonder onder de pijl naar rechts, de onderste lijnt met de onderkant van het logo */
+#sk .sk-keys button[data-v] { top: auto; margin-top: 0; right: calc(30px + env(safe-area-inset-right, 0px)); }
+#sk .sk-keys button[data-v="1"] { bottom: 42px; } #sk .sk-keys button[data-v="-1"] { bottom: 90px; }
+#sk.ab-mode .sk-keys button[data-v] { display: none; }
+/* het sluit-kruisje in Work (desktop) als toets: zelfde vorm, grijs en maat als de pijltoetsen, gecentreerd boven de pijl naar rechts */
+@media (min-width: 761px) {
+  :root.sk-desk:has(#cases.on #sk:not(.ab-mode)) .closebtn.thin { width: 42px; height: 42px; border-radius: 0; top: calc(30px + env(safe-area-inset-top, 0px)); right: calc(30px + env(safe-area-inset-right, 0px)); color: #f2f2f2; opacity: .55; filter: none; transition: opacity .2s; }
+  :root.sk-desk:has(#cases.on #sk:not(.ab-mode)) .closebtn.thin:hover { opacity: .9; }
+  :root.sk-desk:has(#cases.on #sk:not(.ab-mode)) .closebtn.thin::before { content: ""; position: absolute; inset: 1.6px; border: 2.26px solid currentColor; border-radius: 7.6px; }
+  :root.sk-desk:has(#cases.on #sk:not(.ab-mode)) .closebtn.thin svg { width: 15px; height: 15px; stroke-width: 3.6; }
+}
 @media (max-width: 760px) { :root.sk-on #casesTweak { color: rgb(255 255 255 / .6) !important; } }
 @media (min-width: 761px) { :root.sk-desk #casesTweak { color: rgb(255 255 255 / .6) !important; } }
 #casesTweak:hover { color: #fff !important; }
@@ -2621,9 +2672,11 @@ const casesEl = document.getElementById('cases'), root = document.documentElemen
 const sk = document.createElement('div'); sk.id = 'sk'; sk.setAttribute('aria-label', 'Cases als speelkaarten');
 sk.innerHTML = '<div class="sk-mtxt top" aria-hidden="true">Swipe away!</div><div class="sk-mtxt bot naam" role="link" aria-label="Terug naar home">Rudo Menge<br>Art Direction &amp; Design<sup>®</sup></div><div class="sk-mtxt bot mail"><a href="mailto:info@menge.nl" class="mlink">rudo@menge.nl</a></div><div class="sk-stack"></div><div class="sk-count"></div>'
   + '<button class="sk-logo" type="button" aria-label="Rudo Menge, Art Direction &amp; Design: terug naar de start"></button>'
-  + '<div class="sk-desk" aria-hidden="true"><img class="d-pot" src="img/desk/vulpotlood.png" alt=""><img class="d-gum" src="img/desk/gum.png" alt=""><img class="d-mes" src="img/desk/zakmes.png" alt=""></div>'   // bureau-objectjes naast de kaarten (desktop), later te vervangen
+  + '<div class="sk-vig" aria-hidden="true"></div><div class="sk-desk" aria-hidden="true"><img class="d-pot" src="img/desk/vulpotlood.png" alt=""><img class="d-gum" src="img/desk/gum.png" alt=""><img class="d-mes" src="img/desk/zakmes.png" alt=""></div>'   // bureau-objectjes naast de kaarten (desktop), later te vervangen
   + '<div class="sk-keys"><button type="button" data-k="-1" aria-label="Kaart naar links wegvegen"><svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="1" width="24" height="24" rx="5"/><path d="M17 13H9m3.5-3.5L9 13l3.5 3.5"/></svg></button>'
-  + '<button type="button" data-k="1" aria-label="Kaart naar rechts wegvegen"><svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="1" width="24" height="24" rx="5"/><path d="M9 13h8m-3.5-3.5L17 13l-3.5 3.5"/></svg></button></div>';
+  + '<button type="button" data-k="1" aria-label="Kaart naar rechts wegvegen"><svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="1" width="24" height="24" rx="5"/><path d="M9 13h8m-3.5-3.5L17 13l-3.5 3.5"/></svg></button>'
+  + '<button type="button" data-v="-1" aria-label="Kaart naar boven wegvegen"><svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="1" width="24" height="24" rx="5"/><path d="M13 17V9m-3.5 3.5L13 9l3.5 3.5"/></svg></button>'
+  + '<button type="button" data-v="1" aria-label="Kaart naar beneden wegvegen"><svg viewBox="0 0 26 26" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="1" width="24" height="24" rx="5"/><path d="M13 9v8m-3.5-3.5L13 17l3.5-3.5"/></svg></button></div>';
 casesEl.insertBefore(sk, casesEl.firstChild);
 sk.querySelector('.sk-mtxt.mail a').addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); openLink('mailto:info@menge.nl', 'info@menge.nl'); });
 sk.querySelector('.sk-mtxt.naam').addEventListener('click', () => { const b = document.getElementById('closeInfo'); if (b && !b.hidden) b.click(); });
@@ -3087,7 +3140,7 @@ const keyFlash = side => { const b = sk.querySelector(`.sk-keys [data-k="${side}
 document.addEventListener('keydown', e => {
   if (!active() || casesEl.hidden) return;
   const vk = e.key === 'ArrowUp' ? -1 : e.key === 'ArrowDown' ? 1 : 0;
-  if (vk && !mobile.matches) { e.preventDefault(); e.stopImmediatePropagation(); if (moving) return; takeOver(); arcThrow(0, false, vk); return; }
+  if (vk && !mobile.matches) { e.preventDefault(); e.stopImmediatePropagation(); if (moving) return; takeOver(); keyFlashV(vk); arcThrow(0, false, vk); return; }
   if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
   e.preventDefault(); e.stopImmediatePropagation(); if (moving) return; takeOver();
   const side = e.key === 'ArrowRight' ? 1 : -1;
@@ -3099,7 +3152,45 @@ addEventListener('click', e => {
   if (!b || !active() || mobile.matches || casesEl.hidden) return;
   e.preventDefault(); e.stopImmediatePropagation(); takeOver(); arcThrow(b.id === 'casesNext' ? 1 : -1);
 }, true);
-sk.querySelectorAll('.sk-keys button').forEach(b => b.addEventListener('click', () => { takeOver(); keyFlash(+b.dataset.k); arcThrow(+b.dataset.k); }));
+sk.querySelectorAll('.sk-keys button[data-k]').forEach(b => b.addEventListener('click', () => { takeOver(); keyFlash(+b.dataset.k); arcThrow(+b.dataset.k); }));
+const keyFlashV = v => { const b = sk.querySelector(`.sk-keys [data-v="${v}"]`); if (b) { b.classList.add('down'); setTimeout(() => b.classList.remove('down'), 160); } };
+sk.querySelectorAll('.sk-keys button[data-v]').forEach(b => b.addEventListener('click', () => { if (moving) return; takeOver(); keyFlashV(+b.dataset.v); arcThrow(0, false, +b.dataset.v); }));
+// bureau: pen en mes oppakken, neerleggen of weggooien (alleen waar het object echt is, niet in de doorzichtige hoeken)
+{ const hit = new Map();
+  const solid = (img, e) => { let c = hit.get(img); if (!c) { c = document.createElement('canvas'); c.width = img.naturalWidth; c.height = img.naturalHeight; const x = c.getContext('2d', { willReadFrequently: true }); x.drawImage(img, 0, 0); c.x = x; hit.set(img, c); }
+    const r = img.getBoundingClientRect(), px = Math.floor((e.clientX - r.left) / r.width * c.width), py = Math.floor((e.clientY - r.top) / r.height * c.height);
+    try { return c.x.getImageData(px, py, 1, 1).data[3] > 200; } catch (_) { return true; } };
+  sk.querySelectorAll('.sk-desk img').forEach(img => {
+    let st = null;
+    const num = v => parseFloat(img.style.getPropertyValue(v)) || 0;
+    img.addEventListener('pointerdown', e => {
+      if (e.button || !solid(img, e)) return;
+      e.preventDefault(); if (img.nextElementSibling) img.parentNode.append(img); img.setPointerCapture(e.pointerId); img.classList.add('held');   // eerst bovenop leggen, dan vastpakken (verplaatsen in de DOM laat de pointer los)
+      st = { x: e.clientX, y: e.clientY, dx: num('--dx'), dy: num('--dy'), tr: [{ x: e.clientX, y: e.clientY, t: e.timeStamp }] };
+    });
+    img.addEventListener('pointermove', e => {
+      if (!st) return;
+      img.style.setProperty('--dx', st.dx + e.clientX - st.x + 'px'); img.style.setProperty('--dy', st.dy + e.clientY - st.y + 'px');
+      st.tr.push({ x: e.clientX, y: e.clientY, t: e.timeStamp }); while (st.tr.length > 2 && e.timeStamp - st.tr[0].t > 90) st.tr.shift();
+    });
+    const up = e => {
+      if (!st) return; const a = st.tr[0], b = st.tr[st.tr.length - 1], dt = Math.max(16, b.t - a.t); st = null; img.classList.remove('held');
+      let vx = (b.x - a.x) / dt, vy = (b.y - a.y) / dt; const sp = Math.hypot(vx, vy);
+      if (sp < .6) return;   // rustig losgelaten: blijft liggen
+      // weggegooid: vliegt door, draait een beetje, en is weg
+      vx *= 1.5; vy *= 1.5;
+      let x = num('--dx'), y = num('--dy'), r = num('--dr'), vr = (Math.random() < .5 ? -1 : 1) * (.08 + sp * .06), last = performance.now(), t0 = last;
+      const step = now => { const k = Math.min(40, now - last); last = now; x += vx * k; y += vy * k; r += vr * k; vx *= 1.0015; vy *= 1.0015;
+        img.style.setProperty('--dx', x + 'px'); img.style.setProperty('--dy', y + 'px'); img.style.setProperty('--dr', r + 'deg'); img.style.opacity = Math.min(1, (2600 - (now - t0)) / 600);
+        const q = img.getBoundingClientRect(); if (now - t0 > 2600 || q.right < -40 || q.left > innerWidth + 40 || q.bottom < -40 || q.top > innerHeight + 40) { img.classList.add('gone'); return; }
+        requestAnimationFrame(step); };
+      requestAnimationFrame(step);
+    };
+    img.addEventListener('pointerup', up); img.addEventListener('pointercancel', up);
+  });
+  // bij elke nieuwe keer Work liggen ze weer op hun plek
+  new MutationObserver(() => { if (!casesEl.classList.contains('on')) sk.querySelectorAll('.sk-desk img').forEach(i => { i.classList.remove('gone'); ['--dx', '--dy', '--dr', 'opacity'].forEach(v => i.style.removeProperty(v)); }); }).observe(casesEl, { attributes: true, attributeFilter: ['class'] });
+}
 // logo linksonder: losse witte letters uit het logo; af en toe rolt of valt er een letter
 (() => {
   const G = [[117,96,116,137,0,232],[238,133,96,104,120,232],[341,96,103,140,220,232],[450,129,106,107,327,232],[592,96,141,137,437,232],[742,130,103,106,582,232],[850,130,97,103,689,232],[952,130,100,137,790,232],[1058,130,103,106,894,232],[98,257,134,137,1001,392],[234,292,66,102,1139,392],[302,263,65,132,1209,392],[404,257,123,138,1278,392],[533,257,35,137,1405,392],[578,292,66,102,1444,392],[643,291,103,106,1514,392],[747,291,100,106,1621,392],[846,263,65,132,1725,392],[918,257,35,137,1794,392],[958,290,106,107,1833,392],[1070,291,97,103,1943,392],[242,418,129,140,2044,555],[406,419,123,138,2177,555],[531,453,103,106,2304,555],[633,453,94,106,2411,555],[733,419,35,137,2509,555],[774,453,100,137,2548,555],[884,453,97,103,2652,555],[981,432,49,49,2753,555]];
@@ -3179,6 +3270,9 @@ bindSk('abDesk', 'abDesk', on => { window.abDesk = on; }, () => '');
 bindSk('skDesk', 'skDesk', on => { root.classList.toggle('sk-desk', on); if (on && !casesEl.hidden && active()) { build(); deck(1); } }, () => '');
 bindSk('skSizeD', 'skSizeD', v => { sk.style.setProperty('--sk-sd', v / 100); requestAnimationFrame(() => els.forEach(d => fitTitle(d.querySelector('.kaart')))); }, v => v + '%');
 bindSk('skDyD', 'skDyD', v => sk.style.setProperty('--sk-dyd', v + 'px'), v => v + ' px');
+bindSk('potS', 'potS', v => sk.style.setProperty('--pot-s', v / 100), v => v + '%');
+bindSk('mesS', 'mesS', v => sk.style.setProperty('--mes-s', v / 100), v => v + '%');
+bindSk('skVig', 'skVig', v => sk.style.setProperty('--sk-vig', v / 100), v => v + '%');
 bindSk('skDy', 'skDyM5', v => sk.style.setProperty('--sk-dy', v + 'px'), v => (v > 0 ? '+' : '') + v + ' px');
 bindSk('mTopS', 'mTopS3', v => sk.style.setProperty('--mt-s', v + 'vw'), v => Math.round(v / 9.6 * 100) + '%');
 bindSk('mTopY', 'mTopY3', v => sk.style.setProperty('--mt-y', v + 'px'), v => (v > 0 ? '+' : '') + v + ' px');
@@ -3205,7 +3299,7 @@ const hintRow = document.getElementById('cHint').closest('.row'); if (hintRow) h
 addEventListener('resize', () => { if (built) els.forEach(d => fitTitle(d.querySelector('.kaart'))); });
 })();
 </script>
-<div class="ver" id="ver" aria-hidden="true">1.9</div>
+<div class="ver" id="ver" aria-hidden="true">2.0</div>
 <style>
 .ver { position: fixed; z-index: 45; left: calc(10px + env(safe-area-inset-left, 0px)); top: calc(8px + env(safe-area-inset-top, 0px));
   font: 400 10px/1 "Inter", ui-sans-serif, system-ui, sans-serif; letter-spacing: .04em; font-variant-numeric: tabular-nums;
@@ -3217,7 +3311,7 @@ body:has(#info:not([hidden])) .ver, body:has(#cases:not([hidden])) .ver { displa
 </style>
 <script>
 (() => {
-  const el = document.getElementById('ver'), V = '1.9';
+  const el = document.getElementById('ver'), V = '2.0';
   let seen = false; try { seen = localStorage.getItem('mv') === '1'; } catch (e) {}
   fetch('/api/count', { method: seen ? 'GET' : 'POST' }).then(r => r.json()).then(d => {
     if (typeof d.n !== 'number') return;

@@ -35,7 +35,7 @@ for b in ('casesTweak', 'aboutTweak'):
         assert x in s; s = s.replace(x, '')
 # Neue Haas Grotesk: only live once Menge confirms the licence covers web use (asked 2026-11-07).
 # Until then: toggle off (Inter), no @font-face rules, and the fonts/ files stay out of the repo.
-NHG_LIVE = False
+NHG_LIVE = True   # Menge confirmed 2026-11-07: her licences cover web use
 if not NHG_LIVE and 'id="nhgOn"' in s:
     x = 'id="nhgOn" checked>'
     assert s.count(x) == 1; s = s.replace(x, 'id="nhgOn">', 1)
