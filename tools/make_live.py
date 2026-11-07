@@ -17,7 +17,7 @@ if '--bump' in sys.argv:
 s = src
 old = '<!doctype html><html><head><meta charset=utf8>'
 assert s.startswith(old)
-s = s.replace(old, '<!doctype html><html lang="en"><head><meta charset=utf8><title>Rudo Menge · Design &amp; Art Direction</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><meta name="description" content="Rudo Menge, graphic designer and art director in Groningen. Posters, identities, books and exhibitions.">', 1)
+s = s.replace(old, '<!doctype html><html lang="en"><head><meta charset=utf8><title>Rudo Menge - Art Direction &amp; Design</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><meta name="description" content="Rudo Menge, graphic designer and art director in Groningen. Posters, identities, books and exhibitions.">', 1)
 # faster loading (2026-10-29): the artifact must load tiles only near the screen and Cases only when opened
 assert 'new IntersectionObserver' in s and 'function loadCases()' in s, 'artifact lacks the lazy loading: port it from the live index.html first'
 # lanes use the lane-sized copies in img/t/ (made by optimize_media.py below)
