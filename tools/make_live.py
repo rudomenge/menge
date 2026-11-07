@@ -29,10 +29,19 @@ x = '<button class="testbtn" id="testbtn" aria-expanded'
 assert x in s; s = s.replace(x, '<button class="testbtn" id="testbtn" hidden aria-expanded', 1)
 # no test panels on the live site at all (Menge, 2026-11-05): the test button and the Cases tweak
 # button stay hidden for good, there is no ?test switch; testing happens in the artifact only
-if 'id="casesTweak"' in s:
-    x = 'casesTweak.hidden = false;'
-    assert s.count(x) == 1
-    s = s.replace(x, '', 1)
+for b in ('casesTweak', 'aboutTweak'):
+    if f'id="{b}"' in s:
+        x = f'{b}.hidden = false;'
+        assert x in s; s = s.replace(x, '')
+# Neue Haas Grotesk: only live once Menge confirms the licence covers web use (asked 2026-11-07).
+# Until then: toggle off (Inter), no @font-face rules, and the fonts/ files stay out of the repo.
+NHG_LIVE = False
+if not NHG_LIVE and 'id="nhgOn"' in s:
+    x = 'id="nhgOn" checked>'
+    assert s.count(x) == 1; s = s.replace(x, 'id="nhgOn">', 1)
+    import re as _re
+    s, k = _re.subn(r'@font-face\{font-family:"NHG (?:Text|Display)";src:url\(fonts/[^)]*\)[^}]*\}\n?', '', s)
+    assert k and 'fonts/nhg' not in s
 # the page comes wrapped in the artifact skeleton: keep one <head>, move the favicons into it
 import re
 m = re.search(r'</head><body>\n(<!doctype html><html><head>.*?</head><body>)\n', s)
@@ -51,6 +60,8 @@ s += f'''
 .ver {{ position: fixed; z-index: 45; left: calc(10px + env(safe-area-inset-left, 0px)); top: calc(8px + env(safe-area-inset-top, 0px));
   font: 400 10px/1 "Inter", ui-sans-serif, system-ui, sans-serif; letter-spacing: .04em; font-variant-numeric: tabular-nums;
   color: #fff; mix-blend-mode: difference; opacity: .7; pointer-events: none; user-select: none; }}
+/* no test buttons or settings panels on the live site, whatever the page does */
+.testbtn, section.panel {{ display: none !important; }}
 /* only on the homepage: hidden while About or Cases is open */
 body:has(#info:not([hidden])) .ver, body:has(#cases:not([hidden])) .ver {{ display: none; }}
 </style>
