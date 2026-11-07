@@ -62,6 +62,8 @@ s += f'''
   color: #fff; mix-blend-mode: difference; opacity: .7; pointer-events: none; user-select: none; }}
 /* no test buttons or settings panels on the live site, whatever the page does */
 .testbtn, section.panel {{ display: none !important; }}
+/* desk objects (pen, pocket knife, eraser) not on the live site for now (Menge, 2026-11-07) */
+#sk .sk-desk {{ display: none !important; }}
 /* only on the homepage: hidden while About or Cases is open */
 body:has(#info:not([hidden])) .ver, body:has(#cases:not([hidden])) .ver {{ display: none; }}
 </style>
